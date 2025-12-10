@@ -4,9 +4,8 @@ import { Play, RotateCcw, Settings, Trophy } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { DesktopBlocker } from "@/components/game/DesktopBlocker";
 import { SettingsModal } from "@/components/game/SettingsModal";
-import { DifficultyModal } from "@/components/game/DifficultyModal";
 import { useIsMobile } from "@/hooks/useIsMobile";
-import { type GameSettings, type DifficultyLevel } from "@shared/schema";
+import { type GameSettings } from "@shared/schema";
 
 const STORAGE_KEY = "numberMatch_gameState";
 const BEST_SCORE_KEY = "numberMatch_personalBest";
@@ -19,7 +18,6 @@ export default function Home() {
   const [hasSavedGame, setHasSavedGame] = useState(false);
   const [savedScore, setSavedScore] = useState(0);
   const [showSettings, setShowSettings] = useState(false);
-  const [showDifficulty, setShowDifficulty] = useState(false);
   const [settings, setSettings] = useState<GameSettings>({ hapticEnabled: true, soundEnabled: true });
 
   useEffect(() => {
@@ -63,14 +61,7 @@ export default function Home() {
   };
 
   const handleNewGame = () => {
-    setShowDifficulty(true);
-  };
-
-  const handleDifficultySelect = (difficulty: DifficultyLevel) => {
-    localStorage.removeItem(STORAGE_KEY);
-    localStorage.setItem("numberMatch_difficulty", difficulty);
-    setShowDifficulty(false);
-    setLocation("/game");
+    setLocation("/new-game");
   };
 
   const handleSettingsChange = (newSettings: GameSettings) => {
@@ -188,13 +179,6 @@ export default function Home() {
         onClose={() => setShowSettings(false)}
         onSettingsChange={handleSettingsChange}
         onResetGame={handleResetProgress}
-      />
-
-      {/* Difficulty selection modal */}
-      <DifficultyModal
-        isOpen={showDifficulty}
-        onSelect={handleDifficultySelect}
-        onClose={() => setShowDifficulty(false)}
       />
     </div>
   );

@@ -679,6 +679,11 @@ export function useGameState() {
     setGameState(prev => ({ ...prev, isPaused: !prev.isPaused }));
   }, []);
 
+  // Unpause and prepare for quit (so Continue doesn't open paused)
+  const prepareForQuit = useCallback(() => {
+    setGameState(prev => ({ ...prev, isPaused: false }));
+  }, []);
+
   // Restart game
   const restartGame = useCallback(() => {
     const personalBest = loadPersonalBest();
@@ -752,6 +757,7 @@ export function useGameState() {
     handleSelectReward,
     handleSaveForLater,
     togglePause,
+    prepareForQuit,
     restartGame,
     updateSettings,
     resetAllProgress

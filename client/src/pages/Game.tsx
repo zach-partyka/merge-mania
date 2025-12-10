@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useLocation } from "wouter";
 import { Pause, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { GameGrid } from "@/components/game/GameGrid";
@@ -13,9 +14,11 @@ import { DesktopBlocker } from "@/components/game/DesktopBlocker";
 import { useGameState } from "@/hooks/useGameState";
 import { useIsMobile } from "@/hooks/useIsMobile";
 import { cn } from "@/lib/utils";
+import { DIFFICULTY_CONFIGS } from "@shared/schema";
 
 export default function Game() {
   const isMobile = useIsMobile();
+  const [, setLocation] = useLocation();
   const [showSettings, setShowSettings] = useState(false);
   
   const {
@@ -30,6 +33,7 @@ export default function Game() {
     handleSelectReward,
     handleSaveForLater,
     togglePause,
+    prepareForQuit,
     restartGame,
     updateSettings,
     resetAllProgress
@@ -53,7 +57,14 @@ export default function Game() {
     >
       {/* Header */}
       <header className="w-full flex items-center justify-between px-4 py-3">
-        <div className="w-10" /> {/* Spacer for centering */}
+        <div className="w-16 flex items-center">
+          <span 
+            className="font-game text-xs text-white/50 uppercase tracking-wide"
+            data-testid="text-difficulty"
+          >
+            {DIFFICULTY_CONFIGS[gameState.difficulty]?.label || "Normal"}
+          </span>
+        </div>
         
         <ScoreDisplay
           score={gameState.score}
@@ -132,6 +143,10 @@ export default function Game() {
           togglePause();
         }}
         onSettings={() => setShowSettings(true)}
+        onQuit={() => {
+          prepareForQuit();
+          setLocation("/");
+        }}
       />
 
       <SettingsModal

@@ -1,4 +1,4 @@
-import { Play, RotateCcw, Settings } from "lucide-react";
+import { Play, RotateCcw, Settings, Home } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 interface PauseModalProps {
@@ -6,9 +6,10 @@ interface PauseModalProps {
   onResume: () => void;
   onRestart: () => void;
   onSettings: () => void;
+  onQuit: () => void;
 }
 
-export function PauseModal({ isOpen, onResume, onRestart, onSettings }: PauseModalProps) {
+export function PauseModal({ isOpen, onResume, onRestart, onSettings, onQuit }: PauseModalProps) {
   if (!isOpen) return null;
 
   return (
@@ -48,6 +49,16 @@ export function PauseModal({ isOpen, onResume, onRestart, onSettings }: PauseMod
         >
           <Settings className="w-6 h-6 mr-2" />
           Settings
+        </Button>
+        
+        <Button
+          onClick={onQuit}
+          variant="ghost"
+          className="w-full h-14 text-lg font-game-display text-white/50 hover:text-white hover:bg-white/10 rounded-xl"
+          data-testid="button-quit"
+        >
+          <Home className="w-6 h-6 mr-2" />
+          Quit
         </Button>
       </div>
     </div>
