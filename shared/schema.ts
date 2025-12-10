@@ -74,9 +74,6 @@ export function getProgressThreshold(difficulty: DifficultyLevel, progressLevel:
   return Math.round(baseThreshold * multiplier);
 }
 
-// Legacy constant for backwards compatibility
-export const PROGRESS_REWARD_THRESHOLD = 1000;
-
 // Difficulty levels
 export type DifficultyLevel = "kids" | "normal" | "hard";
 
