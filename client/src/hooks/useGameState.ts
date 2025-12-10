@@ -248,8 +248,25 @@ export function useGameState() {
       const lastBlock = selectedBlocks[selectedBlocks.length - 1];
       if (!areBlocksAdjacent(lastBlock, block)) return prev;
       
-      // Check if same value
-      if (block.value !== lastBlock.value) return prev;
+      // Chain combo logic:
+      // 1. Always allow same value connections
+      // 2. After 2+ of same value, allow chaining to next value (2x)
+      const baseValue = selectedBlocks[0].value;
+      const baseCount = selectedBlocks.filter(b => b.value === baseValue).length;
+      const lastValue = lastBlock.value;
+      
+      let isValidConnection = false;
+      
+      if (block.value === lastValue) {
+        // Same value - always valid
+        isValidConnection = true;
+      } else if (baseCount >= 2 && block.value === lastValue * 2) {
+        // Chain to next value - only valid after 2+ base blocks and if it's the next value in sequence
+        // Also need to verify we've "closed" the current value group (no more same-value needed)
+        isValidConnection = true;
+      }
+      
+      if (!isValidConnection) return prev;
       
       triggerHaptic("light");
       return {
@@ -268,19 +285,37 @@ export function useGameState() {
       return;
     }
     
-    // Calculate merged value
+    // Chain combo calculation:
+    // - baseValue: the first block's value (starting point of chain)
+    // - baseCount: how many of the base value were connected (becomes the multiplier)
+    // - finalValue: the highest value in the chain (last unique value reached)
     const baseValue = selectedBlocks[0].value;
-    const mergeCount = selectedBlocks.length;
-    let newValue = baseValue;
+    const baseCount = selectedBlocks.filter(b => b.value === baseValue).length;
     
-    // Each pair of blocks doubles the value
-    for (let i = 1; i < mergeCount; i++) {
-      newValue *= 2;
+    // Find the highest value in the chain (the final merged result)
+    const finalValue = Math.max(...selectedBlocks.map(b => b.value));
+    
+    // Count how many chain levels we went through
+    const chainValues = Array.from(new Set(selectedBlocks.map(b => b.value))).sort((a, b) => a - b);
+    const chainLength = chainValues.length;
+    
+    // The new value is the final value in the chain
+    // If chain has multiple levels, each level after base contributes to the value
+    let newValue = finalValue;
+    
+    // If we have multiple base blocks and only one value level, calculate traditional merge
+    if (chainLength === 1) {
+      newValue = baseValue;
+      for (let i = 1; i < selectedBlocks.length; i++) {
+        newValue *= 2;
+      }
     }
     
-    // Calculate score
+    // Calculate score with base multiplier for chains
+    // baseCount acts as the chain multiplier (3 eights = 3x multiplier)
+    const chainMultiplier = chainLength > 1 ? baseCount : 1;
     const comboMultiplier = gameState.combo > 0 ? Math.min(gameState.combo + 1, 4) : 1;
-    const mergeScore = newValue * mergeCount * comboMultiplier;
+    const mergeScore = newValue * selectedBlocks.length * chainMultiplier * comboMultiplier;
     
     setGameState(prev => {
       const newGrid = prev.grid.map(row => [...row]);
