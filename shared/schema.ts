@@ -165,7 +165,6 @@ export interface GameState {
 
 // Game settings
 export interface GameSettings {
-  hapticEnabled: boolean;
   soundEnabled: boolean;
 }
 
@@ -228,7 +227,6 @@ export const powerUpsSchema = z.object({
 });
 
 export const gameSettingsSchema = z.object({
-  hapticEnabled: z.boolean(),
   soundEnabled: z.boolean()
 });
 

@@ -78,15 +78,6 @@ export function useGameState() {
     };
   }, []);
 
-  const triggerHaptic = useCallback((intensity: "light" | "medium" | "heavy" = "medium") => {
-    if (!gameState.settings.hapticEnabled) return;
-    
-    if ("vibrate" in navigator) {
-      const duration = intensity === "light" ? 10 : intensity === "medium" ? 25 : 50;
-      navigator.vibrate(duration);
-    }
-  }, [gameState.settings.hapticEnabled]);
-
   const dropBlocks = useCallback(() => {
     setGameState(prev => {
       const newGrid = dropBlocksInGrid(prev.grid, prev.eliminatedNumbers);
@@ -118,7 +109,6 @@ export function useGameState() {
         ...prev,
         selectedBlocks: [block]
       }));
-      triggerHaptic("light");
       
       if (removeTimeoutRef.current) clearTimeout(removeTimeoutRef.current);
       removeTimeoutRef.current = setTimeout(() => {
@@ -132,7 +122,6 @@ export function useGameState() {
             powerUps: result.newPowerUps
           };
         });
-        triggerHaptic("heavy");
         
         if (dropTimeoutRef.current) clearTimeout(dropTimeoutRef.current);
         dropTimeoutRef.current = setTimeout(() => dropBlocks(), 100);
@@ -146,7 +135,6 @@ export function useGameState() {
           ...prev,
           swapFirstBlock: block
         }));
-        triggerHaptic("light");
       } else {
         const firstBlock = gameState.swapFirstBlock;
         setGameState(prev => {
@@ -159,7 +147,6 @@ export function useGameState() {
             powerUps: result.newPowerUps
           };
         });
-        triggerHaptic("heavy");
       }
       return;
     }
@@ -169,8 +156,7 @@ export function useGameState() {
       selectedBlocks: [block],
       combo: 0
     }));
-    triggerHaptic("light");
-  }, [gameState.isGameOver, gameState.isPaused, gameState.activePowerUp, gameState.swapFirstBlock, triggerHaptic, dropBlocks]);
+  }, [gameState.isGameOver, gameState.isPaused, gameState.activePowerUp, gameState.swapFirstBlock, dropBlocks]);
 
   const handleTouchMove = useCallback((block: Block) => {
     if (gameState.isGameOver || gameState.isPaused || gameState.activePowerUp) return;
@@ -184,7 +170,6 @@ export function useGameState() {
       if (isAlreadySelected && selectedBlocks.length > 1) {
         const previousBlock = selectedBlocks[selectedBlocks.length - 2];
         if (previousBlock.id === block.id) {
-          triggerHaptic("light");
           return {
             ...prev,
             selectedBlocks: selectedBlocks.slice(0, -1)
@@ -197,13 +182,12 @@ export function useGameState() {
       
       if (!isValidChainConnection(selectedBlocks, block)) return prev;
       
-      triggerHaptic("light");
       return {
         ...prev,
         selectedBlocks: [...selectedBlocks, block]
       };
     });
-  }, [gameState.isGameOver, gameState.isPaused, gameState.activePowerUp, triggerHaptic]);
+  }, [gameState.isGameOver, gameState.isPaused, gameState.activePowerUp]);
 
   const handleTouchEnd = useCallback(() => {
     const { selectedBlocks } = gameState;
@@ -289,11 +273,9 @@ export function useGameState() {
       };
     });
     
-    triggerHaptic("medium");
-    
     if (dropTimeoutRef.current) clearTimeout(dropTimeoutRef.current);
     dropTimeoutRef.current = setTimeout(() => dropBlocks(), 300);
-  }, [gameState, triggerHaptic, dropBlocks]);
+  }, [gameState, dropBlocks]);
 
   const activatePowerUp = useCallback((type: PowerUpType) => {
     if (gameState.powerUps[type] === 0) return;
@@ -304,7 +286,6 @@ export function useGameState() {
         activePowerUp: type,
         mergeAllTargetValue: null
       }));
-      triggerHaptic("light");
       return;
     }
     
@@ -314,9 +295,7 @@ export function useGameState() {
       swapFirstBlock: null,
       mergeAllTargetValue: null
     }));
-    
-    triggerHaptic("light");
-  }, [gameState.powerUps, triggerHaptic]);
+  }, [gameState.powerUps]);
 
   const cancelPowerUp = useCallback(() => {
     setGameState(prev => ({
@@ -336,8 +315,7 @@ export function useGameState() {
       mergeAllTargetValue: targetValue,
       selectedBlocks: blocksToHighlight
     }));
-    triggerHaptic("light");
-  }, [gameState.grid, triggerHaptic]);
+  }, [gameState.grid]);
   
   const executeMergeAll = useCallback(() => {
     const targetValue = gameState.mergeAllTargetValue;
@@ -376,11 +354,9 @@ export function useGameState() {
       };
     });
     
-    triggerHaptic("heavy");
-    
     if (mergeDropTimeoutRef.current) clearTimeout(mergeDropTimeoutRef.current);
     mergeDropTimeoutRef.current = setTimeout(() => dropBlocks(), 300);
-  }, [gameState.grid, gameState.mergeAllTargetValue, gameState.powerUps, gameState.difficulty, triggerHaptic, dropBlocks]);
+  }, [gameState.grid, gameState.mergeAllTargetValue, gameState.powerUps, gameState.difficulty, dropBlocks]);
 
   const handleSelectReward = useCallback((type: PowerUpType) => {
     setGameState(prev => ({
@@ -397,9 +373,7 @@ export function useGameState() {
       setShowRewardModal(false);
       setPendingRewards(0);
     }
-    
-    triggerHaptic("medium");
-  }, [pendingRewards, triggerHaptic]);
+  }, [pendingRewards]);
 
   const handleSaveForLater = useCallback(() => {
     setShowRewardModal(false);

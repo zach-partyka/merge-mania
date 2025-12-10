@@ -18,7 +18,7 @@ export default function Home() {
   const [hasSavedGame, setHasSavedGame] = useState(false);
   const [savedScore, setSavedScore] = useState(0);
   const [showSettings, setShowSettings] = useState(false);
-  const [settings, setSettings] = useState<GameSettings>({ hapticEnabled: true, soundEnabled: true });
+  const [settings, setSettings] = useState<GameSettings>({ soundEnabled: true });
 
   useEffect(() => {
     // Load personal best (now based on progress)

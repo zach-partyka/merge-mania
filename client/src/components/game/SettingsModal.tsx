@@ -1,4 +1,4 @@
-import { X, Vibrate, Volume2 } from "lucide-react";
+import { X, Volume2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
 import { type GameSettings } from "@shared/schema";
@@ -44,21 +44,6 @@ export function SettingsModal({
         
         {/* Settings list */}
         <div className="space-y-4">
-          {/* Haptic feedback */}
-          <div className="flex items-center justify-between py-3 border-b border-white/10">
-            <div className="flex items-center gap-3 text-white">
-              <Vibrate className="w-5 h-5 text-white/60" />
-              <span className="font-game">Haptic Feedback</span>
-            </div>
-            <Switch
-              checked={settings.hapticEnabled}
-              onCheckedChange={(checked) => 
-                onSettingsChange({ ...settings, hapticEnabled: checked })
-              }
-              data-testid="switch-haptic"
-            />
-          </div>
-          
           {/* Sound */}
           <div className="flex items-center justify-between py-3 border-b border-white/10">
             <div className="flex items-center gap-3 text-white">

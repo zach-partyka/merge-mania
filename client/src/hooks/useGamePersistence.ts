@@ -28,7 +28,7 @@ export function loadSettings(): GameSettings {
   } catch (e) {
     console.error("Failed to load settings:", e);
   }
-  return { hapticEnabled: true, soundEnabled: true };
+  return { soundEnabled: true };
 }
 
 export function loadGameState(): GameState | null {
