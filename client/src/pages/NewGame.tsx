@@ -1,5 +1,5 @@
 import { useLocation } from "wouter";
-import { Play, ArrowLeft } from "lucide-react";
+import { Play } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { DesktopBlocker } from "@/components/game/DesktopBlocker";
 import { useIsMobile } from "@/hooks/useIsMobile";
@@ -34,58 +34,65 @@ export default function NewGame() {
       }}
       data-testid="new-game-screen"
     >
-      <Button
-        onClick={handleBack}
-        variant="ghost"
-        size="icon"
-        className="absolute top-6 left-6 text-white/60 hover:text-white hover:bg-white/10"
-        data-testid="button-back"
-      >
-        <ArrowLeft className="w-6 h-6" />
-      </Button>
-
-      <h1 className="font-game-display text-3xl font-bold text-white text-center mb-10">
+      <h1 className="font-game-display text-3xl font-bold text-white text-center mb-8">
         Choose Mode
       </h1>
 
-      <div className="w-full max-w-xs space-y-6">
+      <div className="w-full max-w-xs space-y-4">
         <Button
           onClick={() => handleDifficultySelect("kids")}
-          className="w-full h-24 bg-green-500 hover:bg-green-600 text-white rounded-2xl flex flex-col items-center justify-center gap-2"
+          className="w-full h-20 bg-green-600 hover:bg-green-700 text-white rounded-2xl flex flex-col items-center justify-center gap-1 shadow-lg"
           data-testid="button-difficulty-kids"
         >
           <div className="flex items-center gap-3">
-            <Play className="w-10 h-10" />
-            <span className="font-game-display font-bold text-3xl">
+            <Play className="w-8 h-8" fill="currentColor" />
+            <span className="font-game-display font-bold text-2xl">
               {DIFFICULTY_CONFIGS.kids.label}
             </span>
           </div>
-          <span className="font-game text-sm opacity-80">
+          <span className="font-game text-sm opacity-90">
             {DIFFICULTY_CONFIGS.kids.gridCols}x{DIFFICULTY_CONFIGS.kids.gridRows} grid
           </span>
         </Button>
 
-        <div className="flex justify-center gap-8 pt-4">
-          <button
-            onClick={() => handleDifficultySelect("normal")}
-            className="font-game text-white/50 hover:text-white text-sm underline underline-offset-2 transition-colors"
-            data-testid="button-difficulty-normal"
-          >
-            {DIFFICULTY_CONFIGS.normal.label} ({DIFFICULTY_CONFIGS.normal.gridCols}x{DIFFICULTY_CONFIGS.normal.gridRows})
-          </button>
-          <button
-            onClick={() => handleDifficultySelect("hard")}
-            className="font-game text-white/50 hover:text-white text-sm underline underline-offset-2 transition-colors"
-            data-testid="button-difficulty-hard"
-          >
-            {DIFFICULTY_CONFIGS.hard.label} ({DIFFICULTY_CONFIGS.hard.gridCols}x{DIFFICULTY_CONFIGS.hard.gridRows})
-          </button>
-        </div>
+        <Button
+          onClick={() => handleDifficultySelect("normal")}
+          className="w-full h-14 bg-gray-200 hover:bg-gray-300 text-gray-900 rounded-xl flex items-center justify-center gap-2"
+          data-testid="button-difficulty-normal"
+        >
+          <span className="font-game-display font-bold text-lg">
+            {DIFFICULTY_CONFIGS.normal.label}
+          </span>
+          <span className="font-game text-sm text-gray-700">
+            {DIFFICULTY_CONFIGS.normal.gridCols}x{DIFFICULTY_CONFIGS.normal.gridRows}
+          </span>
+        </Button>
+
+        <Button
+          onClick={() => handleDifficultySelect("hard")}
+          className="w-full h-14 bg-gray-200 hover:bg-gray-300 text-gray-900 rounded-xl flex items-center justify-center gap-2"
+          data-testid="button-difficulty-hard"
+        >
+          <span className="font-game-display font-bold text-lg">
+            {DIFFICULTY_CONFIGS.hard.label}
+          </span>
+          <span className="font-game text-sm text-gray-700">
+            {DIFFICULTY_CONFIGS.hard.gridCols}x{DIFFICULTY_CONFIGS.hard.gridRows}
+          </span>
+        </Button>
       </div>
 
-      <p className="text-white/40 text-sm font-game mt-12 text-center max-w-xs">
+      <p className="text-white/60 text-sm font-game mt-8 text-center max-w-xs">
         Kids mode has a smaller grid and earns power-ups faster
       </p>
+
+      <button
+        onClick={handleBack}
+        className="mt-8 font-game text-white/70 hover:text-white text-base underline underline-offset-4 transition-colors"
+        data-testid="button-back"
+      >
+        Back
+      </button>
     </div>
   );
 }
