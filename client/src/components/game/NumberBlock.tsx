@@ -1,3 +1,4 @@
+import { Crown } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { formatNumber, getBlockColor, type Block } from "@shared/schema";
 
@@ -5,6 +6,7 @@ interface NumberBlockProps {
   block: Block;
   size?: number;
   isInPath?: boolean;
+  isHighest?: boolean;
   onTouchStart?: (block: Block) => void;
   onTouchEnter?: (block: Block) => void;
 }
@@ -13,6 +15,7 @@ export function NumberBlock({
   block, 
   size = 60,
   isInPath = false,
+  isHighest = false,
   onTouchStart,
   onTouchEnter 
 }: NumberBlockProps) {
@@ -67,10 +70,10 @@ export function NumberBlock({
         />
       )}
       
-      {/* Crown icon for 1M blocks */}
-      {block.value >= 1048576 && (
-        <div className="absolute -top-2 left-1/2 -translate-x-1/2 text-yellow-300 text-sm">
-          ♛
+      {/* Crown icon for highest value block on board */}
+      {isHighest && (
+        <div className="absolute -top-1 -right-1 bg-yellow-400 rounded-full p-0.5 shadow-md">
+          <Crown className="w-3 h-3 text-yellow-900" />
         </div>
       )}
 

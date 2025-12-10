@@ -130,6 +130,14 @@ export function GameGrid({
     return selectedBlocks.some(b => b.id === block.id);
   };
 
+  // Find the highest value block on the board
+  const highestValue = grid.reduce((max, row) => {
+    return row.reduce((rowMax, block) => {
+      if (block && block.value > rowMax) return block.value;
+      return rowMax;
+    }, max);
+  }, 0);
+
   return (
     <div 
       ref={gridRef}
@@ -173,6 +181,7 @@ export function GameGrid({
                     block={block}
                     size={blockSize}
                     isInPath={inPath}
+                    isHighest={block.value === highestValue}
                     onTouchStart={onTouchStart}
                     onTouchEnter={onTouchMove}
                   />
