@@ -306,7 +306,8 @@ export function useGameState() {
     const { selectedBlocks } = gameState;
     
     if (selectedBlocks.length < 2) {
-      setGameState(prev => ({ ...prev, selectedBlocks: [] }));
+      // Reset combo and multiplier when selection ends without valid merge
+      setGameState(prev => ({ ...prev, selectedBlocks: [], combo: 0, comboMultiplier: 1 }));
       return;
     }
     
@@ -350,13 +351,12 @@ export function useGameState() {
       newValue = chainResult;
     }
     
-    // Calculate score with base multiplier for chains
-    // baseCount acts as the chain multiplier (3 eights = 3x multiplier)
-    const chainMultiplier = chainLength > 1 ? baseCount : 1;
-    const comboMultiplier = gameState.combo > 0 ? Math.min(gameState.combo + 1, 4) : 1;
+    // Simplified scoring: newValue × comboMultiplier only
+    // Combo bonus: +25% per consecutive merge, max 2x (at combo 4+)
+    const comboMultiplier = 1 + Math.min(gameState.combo * 0.25, 1);
     // Apply difficulty score multiplier (fallback to normal if undefined)
     const difficultyConfig = DIFFICULTY_CONFIGS[gameState.difficulty] || DIFFICULTY_CONFIGS.normal;
-    const mergeScore = Math.round(newValue * selectedBlocks.length * chainMultiplier * comboMultiplier * difficultyConfig.scoreMultiplier);
+    const mergeScore = Math.round(newValue * comboMultiplier * difficultyConfig.scoreMultiplier);
     
     setGameState(prev => {
       const newGrid = prev.grid.map(row => [...row]);

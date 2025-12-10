@@ -57,10 +57,11 @@ export const POWERUP_MILESTONES = [128, 512, 2048, 8192, 32768, 131072, 524288, 
 export const SCORE_POWERUP_THRESHOLD = 2500;
 
 // Progress bar base thresholds per difficulty (scales up each level)
+// Tuned for simplified scoring: newValue × comboMultiplier only
 export const PROGRESS_BASE_THRESHOLD: Record<DifficultyLevel, number> = {
-  kids: 3000,
-  normal: 5000,
-  hard: 8000,
+  kids: 500,
+  normal: 1000,
+  hard: 2000,
 };
 
 // Progress threshold scaling per level (percentage increase)
