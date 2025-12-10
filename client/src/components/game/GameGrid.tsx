@@ -201,6 +201,7 @@ export function GameGrid({
                     block={block}
                     size={blockSize}
                     isInPath={inPath}
+                    chainLength={inPath ? selectedBlocks.length : 0}
                     isHighest={block.id === crownBlockId}
                     onTouchStart={onTouchStart}
                     onTouchEnter={onTouchMove}
@@ -259,21 +260,30 @@ function ConnectionPath({
 
   return (
     <>
-      {/* Subtle outer shadow */}
+      {/* Outer glow for visibility */}
       <path
         d={pathData}
         fill="none"
-        stroke="rgba(0,0,0,0.3)"
-        strokeWidth={10}
+        stroke="rgba(255,255,0,0.4)"
+        strokeWidth={16}
         strokeLinecap="round"
         strokeLinejoin="round"
       />
-      {/* Main line - subtle white */}
+      {/* Middle glow */}
       <path
         d={pathData}
         fill="none"
         stroke="rgba(255,255,255,0.6)"
-        strokeWidth={4}
+        strokeWidth={10}
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+      {/* Main line - bright yellow for high contrast */}
+      <path
+        d={pathData}
+        fill="none"
+        stroke="#FFDD00"
+        strokeWidth={5}
         strokeLinecap="round"
         strokeLinejoin="round"
       />

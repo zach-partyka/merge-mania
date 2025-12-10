@@ -6,6 +6,7 @@ interface NumberBlockProps {
   block: Block;
   size?: number;
   isInPath?: boolean;
+  chainLength?: number;
   isHighest?: boolean;
   onTouchStart?: (block: Block) => void;
   onTouchEnter?: (block: Block) => void;
@@ -15,6 +16,7 @@ export function NumberBlock({
   block, 
   size = 60,
   isInPath = false,
+  chainLength = 0,
   isHighest = false,
   onTouchStart,
   onTouchEnter 
@@ -28,6 +30,14 @@ export function NumberBlock({
     if (label.length <= 3) return "text-xl";
     if (label.length <= 4) return "text-lg";
     return "text-base";
+  };
+  
+  // Get progressive shake class based on chain length
+  const getChainShakeClass = () => {
+    if (!isInPath || chainLength < 3) return "";
+    if (chainLength >= 6) return "animate-chain-shake-intense";
+    if (chainLength >= 4) return "animate-chain-shake-medium";
+    return "animate-chain-shake-subtle";
   };
 
   return (
@@ -58,7 +68,7 @@ export function NumberBlock({
         e.preventDefault();
       }}
     >
-      <span className="relative z-10 drop-shadow-md">{label}</span>
+      <span className={cn("relative z-10 drop-shadow-md", getChainShakeClass())}>{label}</span>
       
       {/* Highlight effect for higher numbers */}
       {block.value >= 1024 && (

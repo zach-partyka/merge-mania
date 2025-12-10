@@ -165,6 +165,23 @@ export default {
           "0%, 100%": { opacity: "1" },
           "50%": { opacity: "0.7" },
         },
+        "chain-shake-subtle": {
+          "0%, 100%": { transform: "translateX(0) rotate(0deg)" },
+          "25%": { transform: "translateX(-1px) rotate(-0.5deg)" },
+          "75%": { transform: "translateX(1px) rotate(0.5deg)" },
+        },
+        "chain-shake-medium": {
+          "0%, 100%": { transform: "translateX(0) rotate(0deg)" },
+          "25%": { transform: "translateX(-2px) rotate(-1deg)" },
+          "75%": { transform: "translateX(2px) rotate(1deg)" },
+        },
+        "chain-shake-intense": {
+          "0%, 100%": { transform: "translateX(0) rotate(0deg)" },
+          "20%": { transform: "translateX(-3px) rotate(-1.5deg)" },
+          "40%": { transform: "translateX(3px) rotate(1.5deg)" },
+          "60%": { transform: "translateX(-3px) rotate(-1.5deg)" },
+          "80%": { transform: "translateX(3px) rotate(1.5deg)" },
+        },
       },
       animation: {
         "accordion-down": "accordion-down 0.2s ease-out",
@@ -177,6 +194,9 @@ export default {
         "shake": "shake 0.3s ease-in-out",
         "bounce-subtle": "bounce-subtle 0.5s ease-in-out",
         "progress-pulse": "progress-pulse 1s ease-in-out infinite",
+        "chain-shake-subtle": "chain-shake-subtle 0.15s ease-in-out infinite",
+        "chain-shake-medium": "chain-shake-medium 0.12s ease-in-out infinite",
+        "chain-shake-intense": "chain-shake-intense 0.1s ease-in-out infinite",
       },
     },
   },
