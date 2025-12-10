@@ -13,6 +13,7 @@ import {
   SCORE_POWERUP_THRESHOLD,
   ELIMINATION_MILESTONES,
   DIFFICULTY_CONFIGS,
+  PROGRESS_POINTS_PER_BLOCK,
   generateBlockId,
   areBlocksAdjacent,
   getAvailableSpawnNumbers,
@@ -416,9 +417,10 @@ export function useGameState() {
         }
       }
       
-      // Calculate progress points (apply difficulty power-up multiplier, fallback to normal)
+      // Calculate progress points based on blocks merged (not score)
+      // This makes progress consistent regardless of block values
       const config = DIFFICULTY_CONFIGS[prev.difficulty] || DIFFICULTY_CONFIGS.normal;
-      const progressEarned = Math.round(mergeScore * config.powerUpMultiplier);
+      const progressEarned = Math.round(selectedBlocks.length * PROGRESS_POINTS_PER_BLOCK * config.powerUpMultiplier);
       let newProgressPoints = prev.progressPoints + progressEarned;
       
       // Check for score-based power-up earning (also affected by difficulty)
