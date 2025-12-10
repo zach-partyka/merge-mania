@@ -249,20 +249,24 @@ export function useGameState() {
       if (!areBlocksAdjacent(lastBlock, block)) return prev;
       
       // Chain combo logic:
-      // 1. Always allow same value connections
-      // 2. After 2+ of same value, allow chaining to next value (2x)
+      // 1. First, must connect 2+ blocks of the same base value
+      // 2. After that, can only chain FORWARD to the next value (2x)
+      // 3. Once you advance to a higher tier, you cannot go back
       const baseValue = selectedBlocks[0].value;
       const baseCount = selectedBlocks.filter(b => b.value === baseValue).length;
       const lastValue = lastBlock.value;
+      const currentMaxValue = Math.max(...selectedBlocks.map(b => b.value));
       
       let isValidConnection = false;
       
       if (block.value === lastValue) {
-        // Same value - always valid
+        // Same value as last - valid
         isValidConnection = true;
-      } else if (baseCount >= 2 && block.value === lastValue * 2) {
-        // Chain to next value - only valid after 2+ base blocks and if it's the next value in sequence
-        // Also need to verify we've "closed" the current value group (no more same-value needed)
+      } else if (baseCount >= 2 && block.value === lastValue * 2 && block.value > currentMaxValue) {
+        // Chaining forward to next value:
+        // - Must have 2+ base blocks first
+        // - Must be exactly 2x the last value
+        // - Must be higher than any value already in the chain (no going back)
         isValidConnection = true;
       }
       
@@ -288,27 +292,41 @@ export function useGameState() {
     // Chain combo calculation:
     // - baseValue: the first block's value (starting point of chain)
     // - baseCount: how many of the base value were connected (becomes the multiplier)
-    // - finalValue: the highest value in the chain (last unique value reached)
+    // - Each chain step doubles the value, carrying the base multiplier forward
     const baseValue = selectedBlocks[0].value;
     const baseCount = selectedBlocks.filter(b => b.value === baseValue).length;
     
-    // Find the highest value in the chain (the final merged result)
-    const finalValue = Math.max(...selectedBlocks.map(b => b.value));
-    
-    // Count how many chain levels we went through
+    // Get unique values in the chain, sorted ascending
     const chainValues = Array.from(new Set(selectedBlocks.map(b => b.value))).sort((a, b) => a - b);
     const chainLength = chainValues.length;
     
-    // The new value is the final value in the chain
-    // If chain has multiple levels, each level after base contributes to the value
-    let newValue = finalValue;
+    let newValue: number;
     
-    // If we have multiple base blocks and only one value level, calculate traditional merge
     if (chainLength === 1) {
+      // Traditional merge: all same value, each block doubles
       newValue = baseValue;
       for (let i = 1; i < selectedBlocks.length; i++) {
         newValue *= 2;
       }
+    } else {
+      // Chain merge: base blocks create multiplier, then double through each chain level
+      // Start with base value doubled for each base block beyond the first
+      let chainResult = baseValue;
+      for (let i = 1; i < baseCount; i++) {
+        chainResult *= 2;
+      }
+      
+      // Then double for each chain level we advanced through
+      // Each new tier we touch adds another doubling
+      for (let i = 1; i < chainLength; i++) {
+        const tierValue = chainValues[i];
+        const tierCount = selectedBlocks.filter(b => b.value === tierValue).length;
+        // Each block at this tier doubles the result
+        for (let j = 0; j < tierCount; j++) {
+          chainResult *= 2;
+        }
+      }
+      newValue = chainResult;
     }
     
     // Calculate score with base multiplier for chains
