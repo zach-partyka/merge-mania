@@ -9,8 +9,39 @@ export default {
         lg: ".5625rem", /* 9px */
         md: ".375rem", /* 6px */
         sm: ".1875rem", /* 3px */
+        xl: "0.75rem", /* 12px for game blocks */
+        "2xl": "1rem", /* 16px */
       },
       colors: {
+        // Apollo color palette for number blocks
+        game: {
+          bg: "#1a1a2e",
+          "bg-dark": "#16162a",
+          grid: "#252541",
+          "grid-border": "#2d2d4a",
+        },
+        block: {
+          2: "#4a90a4",
+          4: "#5da3b5",
+          8: "#70b6c6",
+          16: "#83c9d7",
+          32: "#2d8659",
+          64: "#3fa96f",
+          128: "#52bc82",
+          256: "#65cf95",
+          512: "#d4a655",
+          1024: "#e6b865",
+          "2k": "#f8ca75",
+          "4k": "#c75e76",
+          "8k": "#d97189",
+          "16k": "#eb849c",
+          "32k": "#7a4b94",
+          "64k": "#8d5ea7",
+          "131k": "#a071ba",
+          "262k": "#b384cd",
+          "524k": "#c79740",
+          "1m": "#daa550",
+        },
         // Flat / base colors (regular buttons)
         background: "hsl(var(--background) / <alpha-value>)",
         foreground: "hsl(var(--foreground) / <alpha-value>)",
