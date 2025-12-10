@@ -9,14 +9,14 @@ import {
   GRID_ROWS,
   INITIAL_POWERUPS,
   MAX_POWERUP_COUNT,
-  PROGRESS_REWARD_THRESHOLD,
   POWERUP_MILESTONES,
   SCORE_POWERUP_THRESHOLD,
   ELIMINATION_MILESTONES,
   DIFFICULTY_CONFIGS,
   generateBlockId,
   areBlocksAdjacent,
-  getAvailableSpawnNumbers
+  getAvailableSpawnNumbers,
+  getProgressThreshold
 } from "@shared/schema";
 
 const STORAGE_KEY = "numberMatch_gameState";
@@ -108,6 +108,7 @@ function createInitialState(): GameState {
     highestNumber: 2,
     eliminatedNumbers: [],
     progressPoints: 0,
+    progressLevel: 0,
     selectedBlocks: [],
     isGameOver: false,
     isPaused: false,
@@ -428,10 +429,13 @@ export function useGameState() {
         setPendingRewards(r => r + (newThreshold - previousThreshold));
       }
       
-      // Check for progress bar rewards
-      if (newProgressPoints >= PROGRESS_REWARD_THRESHOLD) {
+      // Check for progress bar rewards (use dynamic threshold)
+      const currentThreshold = getProgressThreshold(prev.difficulty, prev.progressLevel);
+      let newProgressLevel = prev.progressLevel;
+      if (newProgressPoints >= currentThreshold) {
         setShowRewardModal(true);
-        newProgressPoints = newProgressPoints % PROGRESS_REWARD_THRESHOLD;
+        newProgressPoints = newProgressPoints - currentThreshold;
+        newProgressLevel = prev.progressLevel + 1;
       }
       
       // Update personal best
@@ -448,6 +452,7 @@ export function useGameState() {
         highestNumber: newHighest,
         eliminatedNumbers: newEliminated,
         progressPoints: newProgressPoints,
+        progressLevel: newProgressLevel,
         selectedBlocks: [],
         unlockedMilestones: newMilestones
       };
@@ -731,6 +736,10 @@ export function useGameState() {
         // Ensure difficulty is set (backwards compatibility)
         if (!savedState.difficulty) {
           savedState.difficulty = "normal";
+        }
+        // Ensure progressLevel is set (backwards compatibility)
+        if (typeof savedState.progressLevel !== "number") {
+          savedState.progressLevel = 0;
         }
         setGameState({
           ...savedState,

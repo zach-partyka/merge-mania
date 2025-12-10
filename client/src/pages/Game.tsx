@@ -85,7 +85,11 @@ export default function Game() {
       </header>
 
       {/* Progress bar */}
-      <ProgressBar progressPoints={gameState.progressPoints} />
+      <ProgressBar 
+        progressPoints={gameState.progressPoints}
+        difficulty={gameState.difficulty}
+        progressLevel={gameState.progressLevel}
+      />
 
       {/* Active power-up indicator */}
       {gameState.activePowerUp && (

@@ -56,7 +56,24 @@ export const POWERUP_MILESTONES = [128, 512, 2048, 8192, 32768, 131072, 524288, 
 // Score threshold for earning power-ups
 export const SCORE_POWERUP_THRESHOLD = 2500;
 
-// Progress bar threshold for rewards
+// Progress bar base thresholds per difficulty (scales up each level)
+export const PROGRESS_BASE_THRESHOLD: Record<DifficultyLevel, number> = {
+  kids: 800,
+  normal: 1500,
+  hard: 2500,
+};
+
+// Progress threshold scaling per level (percentage increase)
+export const PROGRESS_THRESHOLD_SCALING = 0.25; // 25% increase per level
+
+// Calculate dynamic progress threshold based on level and difficulty
+export function getProgressThreshold(difficulty: DifficultyLevel, progressLevel: number): number {
+  const baseThreshold = PROGRESS_BASE_THRESHOLD[difficulty] || PROGRESS_BASE_THRESHOLD.normal;
+  const multiplier = Math.pow(1 + PROGRESS_THRESHOLD_SCALING, progressLevel);
+  return Math.round(baseThreshold * multiplier);
+}
+
+// Legacy constant for backwards compatibility
 export const PROGRESS_REWARD_THRESHOLD = 1000;
 
 // Difficulty levels
@@ -136,6 +153,7 @@ export interface GameState {
   highestNumber: number;
   eliminatedNumbers: number[];
   progressPoints: number;
+  progressLevel: number;
   selectedBlocks: Block[];
   isGameOver: boolean;
   isPaused: boolean;

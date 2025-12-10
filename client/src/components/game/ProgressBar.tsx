@@ -1,14 +1,17 @@
 import { Gift } from "lucide-react";
-import { PROGRESS_REWARD_THRESHOLD } from "@shared/schema";
+import { type DifficultyLevel, getProgressThreshold } from "@shared/schema";
 
 interface ProgressBarProps {
   progressPoints: number;
+  difficulty: DifficultyLevel;
+  progressLevel: number;
   onRewardReady?: () => void;
 }
 
-export function ProgressBar({ progressPoints }: ProgressBarProps) {
-  const progress = Math.min(progressPoints / PROGRESS_REWARD_THRESHOLD, 1);
-  const isRewardReady = progressPoints >= PROGRESS_REWARD_THRESHOLD;
+export function ProgressBar({ progressPoints, difficulty, progressLevel }: ProgressBarProps) {
+  const threshold = getProgressThreshold(difficulty, progressLevel);
+  const progress = Math.min(progressPoints / threshold, 1);
+  const isRewardReady = progressPoints >= threshold;
   
   return (
     <div className="w-full px-4" data-testid="progress-bar">
@@ -21,7 +24,7 @@ export function ProgressBar({ progressPoints }: ProgressBarProps) {
         
         {/* Threshold marker */}
         <div className="absolute right-2 top-1/2 -translate-y-1/2 flex items-center gap-1 text-white/80 text-xs font-game">
-          <span>{PROGRESS_REWARD_THRESHOLD}</span>
+          <span>{threshold}</span>
           <Gift className={`w-4 h-4 ${isRewardReady ? "text-yellow-400 animate-pulse" : "text-white/60"}`} />
         </div>
         
