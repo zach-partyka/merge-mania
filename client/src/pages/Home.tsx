@@ -96,17 +96,6 @@ export default function Home() {
       }}
       data-testid="home-screen"
     >
-      {/* Settings button */}
-      <Button
-        size="icon"
-        variant="ghost"
-        onClick={() => setShowSettings(true)}
-        className="absolute top-4 right-4 text-white/60 hover:text-white hover:bg-white/10"
-        data-testid="button-settings"
-      >
-        <Settings className="w-6 h-6" />
-      </Button>
-
       {/* Game title */}
       <div className="text-center mb-8">
         <h1 className="font-game-display text-5xl font-bold text-white mb-2 drop-shadow-lg">
@@ -166,6 +155,17 @@ export default function Home() {
             Play
           </Button>
         )}
+        
+        {/* Settings button */}
+        <Button
+          onClick={() => setShowSettings(true)}
+          variant="ghost"
+          className="w-full h-12 text-base font-game text-white/60 hover:text-white hover:bg-white/10 rounded-xl"
+          data-testid="button-settings"
+        >
+          <Settings className="w-5 h-5 mr-2" />
+          Settings
+        </Button>
       </div>
 
       {/* How to play hint */}
