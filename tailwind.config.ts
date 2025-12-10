@@ -117,6 +117,8 @@ export default {
         sans: ["var(--font-sans)"],
         serif: ["var(--font-serif)"],
         mono: ["var(--font-mono)"],
+        game: ["Nunito", "sans-serif"],
+        "game-display": ["Fredoka", "sans-serif"],
       },
       keyframes: {
         "accordion-down": {
@@ -127,10 +129,44 @@ export default {
           from: { height: "var(--radix-accordion-content-height)" },
           to: { height: "0" },
         },
+        "block-pop": {
+          "0%": { transform: "scale(1)" },
+          "50%": { transform: "scale(1.15)" },
+          "100%": { transform: "scale(1)" },
+        },
+        "block-merge": {
+          "0%": { transform: "scale(1)", opacity: "1" },
+          "50%": { transform: "scale(1.2)", opacity: "0.8" },
+          "100%": { transform: "scale(0)", opacity: "0" },
+        },
+        "block-drop": {
+          "0%": { transform: "translateY(-100%)", opacity: "0" },
+          "100%": { transform: "translateY(0)", opacity: "1" },
+        },
+        "combo-pop": {
+          "0%": { transform: "scale(0) translateY(0)", opacity: "0" },
+          "50%": { transform: "scale(1.2) translateY(-10px)", opacity: "1" },
+          "100%": { transform: "scale(1) translateY(-20px)", opacity: "0" },
+        },
+        "pulse-glow": {
+          "0%, 100%": { boxShadow: "0 0 0 0 rgba(255, 255, 255, 0.4)" },
+          "50%": { boxShadow: "0 0 20px 10px rgba(255, 255, 255, 0.2)" },
+        },
+        "shake": {
+          "0%, 100%": { transform: "translateX(0)" },
+          "25%": { transform: "translateX(-5px)" },
+          "75%": { transform: "translateX(5px)" },
+        },
       },
       animation: {
         "accordion-down": "accordion-down 0.2s ease-out",
         "accordion-up": "accordion-up 0.2s ease-out",
+        "block-pop": "block-pop 0.2s ease-out",
+        "block-merge": "block-merge 0.3s ease-out forwards",
+        "block-drop": "block-drop 0.3s ease-out",
+        "combo-pop": "combo-pop 0.6s ease-out forwards",
+        "pulse-glow": "pulse-glow 1.5s ease-in-out infinite",
+        "shake": "shake 0.3s ease-in-out",
       },
     },
   },
