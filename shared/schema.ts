@@ -59,7 +59,48 @@ export const SCORE_POWERUP_THRESHOLD = 2500;
 // Progress bar threshold for rewards
 export const PROGRESS_REWARD_THRESHOLD = 1000;
 
-// Grid dimensions
+// Difficulty levels
+export type DifficultyLevel = "kids" | "normal" | "hard";
+
+// Difficulty configuration
+export interface DifficultyConfig {
+  label: string;
+  description: string;
+  gridCols: number;
+  gridRows: number;
+  scoreMultiplier: number;
+  powerUpMultiplier: number;
+}
+
+// Difficulty presets
+export const DIFFICULTY_CONFIGS: Record<DifficultyLevel, DifficultyConfig> = {
+  kids: {
+    label: "Kids",
+    description: "Smaller grid, easier gameplay",
+    gridCols: 4,
+    gridRows: 5,
+    scoreMultiplier: 1.5,
+    powerUpMultiplier: 1.5,
+  },
+  normal: {
+    label: "Normal",
+    description: "Standard challenge",
+    gridCols: 5,
+    gridRows: 7,
+    scoreMultiplier: 1.0,
+    powerUpMultiplier: 1.0,
+  },
+  hard: {
+    label: "Hard",
+    description: "For puzzle masters",
+    gridCols: 5,
+    gridRows: 7,
+    scoreMultiplier: 0.7,
+    powerUpMultiplier: 0.5,
+  },
+};
+
+// Default grid dimensions (for backwards compatibility)
 export const GRID_COLS = 5;
 export const GRID_ROWS = 7;
 
@@ -102,6 +143,7 @@ export interface GameState {
   swapFirstBlock: Block | null;
   settings: GameSettings;
   unlockedMilestones: number[];
+  difficulty: DifficultyLevel;
 }
 
 // Game settings
@@ -173,6 +215,8 @@ export const gameSettingsSchema = z.object({
   soundEnabled: z.boolean()
 });
 
+export const difficultyLevelSchema = z.enum(["kids", "normal", "hard"]);
+
 export const gameStateSchema = z.object({
   grid: z.array(z.array(blockSchema.nullable())),
   score: z.number(),
@@ -189,5 +233,6 @@ export const gameStateSchema = z.object({
   activePowerUp: z.enum(["remove", "swap", "mergeAll"]).nullable(),
   swapFirstBlock: blockSchema.nullable(),
   settings: gameSettingsSchema,
-  unlockedMilestones: z.array(z.number())
+  unlockedMilestones: z.array(z.number()),
+  difficulty: difficultyLevelSchema
 });

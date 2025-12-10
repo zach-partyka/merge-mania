@@ -4,6 +4,7 @@ import {
   type Block,
   type PowerUpType,
   type GameSettings,
+  type DifficultyLevel,
   GRID_COLS,
   GRID_ROWS,
   INITIAL_POWERUPS,
@@ -12,6 +13,7 @@ import {
   POWERUP_MILESTONES,
   SCORE_POWERUP_THRESHOLD,
   ELIMINATION_MILESTONES,
+  DIFFICULTY_CONFIGS,
   generateBlockId,
   areBlocksAdjacent,
   getAvailableSpawnNumbers
@@ -20,6 +22,7 @@ import {
 const STORAGE_KEY = "numberMatch_gameState";
 const BEST_SCORE_KEY = "numberMatch_personalBest";
 const SETTINGS_KEY = "numberMatch_settings";
+const DIFFICULTY_KEY = "numberMatch_difficulty";
 
 // Create a new block with random value
 function createRandomBlock(row: number, col: number, eliminatedNumbers: number[]): Block {
@@ -38,17 +41,30 @@ function createRandomBlock(row: number, col: number, eliminatedNumbers: number[]
 }
 
 // Initialize a new grid
-function createInitialGrid(eliminatedNumbers: number[] = []): (Block | null)[][] {
+function createInitialGrid(eliminatedNumbers: number[] = [], gridRows: number = GRID_ROWS, gridCols: number = GRID_COLS): (Block | null)[][] {
   const grid: (Block | null)[][] = [];
   
-  for (let row = 0; row < GRID_ROWS; row++) {
+  for (let row = 0; row < gridRows; row++) {
     grid[row] = [];
-    for (let col = 0; col < GRID_COLS; col++) {
+    for (let col = 0; col < gridCols; col++) {
       grid[row][col] = createRandomBlock(row, col, eliminatedNumbers);
     }
   }
   
   return grid;
+}
+
+// Load difficulty from localStorage
+function loadDifficulty(): DifficultyLevel {
+  try {
+    const stored = localStorage.getItem(DIFFICULTY_KEY);
+    if (stored && (stored === "kids" || stored === "normal" || stored === "hard")) {
+      return stored;
+    }
+  } catch (e) {
+    console.error("Failed to load difficulty:", e);
+  }
+  return "normal";
 }
 
 // Load settings from localStorage
@@ -79,8 +95,11 @@ function loadPersonalBest(): number {
 
 // Create initial game state
 function createInitialState(): GameState {
+  const difficulty = loadDifficulty();
+  const config = DIFFICULTY_CONFIGS[difficulty];
+  
   return {
-    grid: createInitialGrid(),
+    grid: createInitialGrid([], config.gridRows, config.gridCols),
     score: 0,
     personalBest: loadPersonalBest(),
     combo: 0,
@@ -95,7 +114,8 @@ function createInitialState(): GameState {
     activePowerUp: null,
     swapFirstBlock: null,
     settings: loadSettings(),
-    unlockedMilestones: []
+    unlockedMilestones: [],
+    difficulty
   };
 }
 
@@ -333,7 +353,9 @@ export function useGameState() {
     // baseCount acts as the chain multiplier (3 eights = 3x multiplier)
     const chainMultiplier = chainLength > 1 ? baseCount : 1;
     const comboMultiplier = gameState.combo > 0 ? Math.min(gameState.combo + 1, 4) : 1;
-    const mergeScore = newValue * selectedBlocks.length * chainMultiplier * comboMultiplier;
+    // Apply difficulty score multiplier (fallback to normal if undefined)
+    const difficultyConfig = DIFFICULTY_CONFIGS[gameState.difficulty] || DIFFICULTY_CONFIGS.normal;
+    const mergeScore = Math.round(newValue * selectedBlocks.length * chainMultiplier * comboMultiplier * difficultyConfig.scoreMultiplier);
     
     setGameState(prev => {
       const newGrid = prev.grid.map(row => [...row]);
@@ -384,8 +406,8 @@ export function useGameState() {
       if (eliminationTarget && !newEliminated.includes(eliminationTarget)) {
         newEliminated.push(eliminationTarget);
         // Remove all blocks with this value
-        for (let r = 0; r < GRID_ROWS; r++) {
-          for (let c = 0; c < GRID_COLS; c++) {
+        for (let r = 0; r < newGrid.length; r++) {
+          for (let c = 0; c < newGrid[0].length; c++) {
             if (newGrid[r][c]?.value === eliminationTarget) {
               newGrid[r][c] = null;
             }
@@ -393,12 +415,15 @@ export function useGameState() {
         }
       }
       
-      // Calculate progress points
-      let newProgressPoints = prev.progressPoints + mergeScore;
+      // Calculate progress points (apply difficulty power-up multiplier, fallback to normal)
+      const config = DIFFICULTY_CONFIGS[prev.difficulty] || DIFFICULTY_CONFIGS.normal;
+      const progressEarned = Math.round(mergeScore * config.powerUpMultiplier);
+      let newProgressPoints = prev.progressPoints + progressEarned;
       
-      // Check for score-based power-up earning
-      const previousThreshold = Math.floor(prev.score / SCORE_POWERUP_THRESHOLD);
-      const newThreshold = Math.floor((prev.score + mergeScore) / SCORE_POWERUP_THRESHOLD);
+      // Check for score-based power-up earning (also affected by difficulty)
+      const adjustedThreshold = Math.round(SCORE_POWERUP_THRESHOLD / config.powerUpMultiplier);
+      const previousThreshold = Math.floor(prev.score / adjustedThreshold);
+      const newThreshold = Math.floor((prev.score + mergeScore) / adjustedThreshold);
       if (newThreshold > previousThreshold) {
         setPendingRewards(r => r + (newThreshold - previousThreshold));
       }
@@ -444,13 +469,15 @@ export function useGameState() {
   const dropBlocks = useCallback(() => {
     setGameState(prev => {
       const newGrid = prev.grid.map(row => [...row]);
+      const gridRows = newGrid.length;
+      const gridCols = newGrid[0]?.length || 0;
       
       // For each column, move blocks down to fill gaps
-      for (let col = 0; col < GRID_COLS; col++) {
-        let writeRow = GRID_ROWS - 1;
+      for (let col = 0; col < gridCols; col++) {
+        let writeRow = gridRows - 1;
         
         // Move existing blocks down
-        for (let row = GRID_ROWS - 1; row >= 0; row--) {
+        for (let row = gridRows - 1; row >= 0; row--) {
           if (newGrid[row][col] !== null && !newGrid[row][col]?.isMerging) {
             if (row !== writeRow) {
               newGrid[writeRow][col] = {
@@ -492,8 +519,11 @@ export function useGameState() {
 
   // Check if there are any valid moves left (including diagonals)
   const checkForValidMoves = (grid: (Block | null)[][]): boolean => {
-    for (let row = 0; row < GRID_ROWS; row++) {
-      for (let col = 0; col < GRID_COLS; col++) {
+    const gridRows = grid.length;
+    const gridCols = grid[0]?.length || 0;
+    
+    for (let row = 0; row < gridRows; row++) {
+      for (let col = 0; col < gridCols; col++) {
         const block = grid[row][col];
         if (!block) continue;
         
@@ -524,9 +554,11 @@ export function useGameState() {
     if (type === "mergeAll") {
       // Find the most common number and merge all of them
       const valueCounts: Record<number, Block[]> = {};
+      const gridRows = gameState.grid.length;
+      const gridCols = gameState.grid[0]?.length || 0;
       
-      for (let row = 0; row < GRID_ROWS; row++) {
-        for (let col = 0; col < GRID_COLS; col++) {
+      for (let row = 0; row < gridRows; row++) {
+        for (let col = 0; col < gridCols; col++) {
           const block = gameState.grid[row][col];
           if (block) {
             if (!valueCounts[block.value]) {
@@ -690,6 +722,10 @@ export function useGameState() {
               block ? { ...block, isNew: false, isMerging: false, isSelected: false } : null
             )
           );
+        }
+        // Ensure difficulty is set (backwards compatibility)
+        if (!savedState.difficulty) {
+          savedState.difficulty = "normal";
         }
         setGameState({
           ...savedState,

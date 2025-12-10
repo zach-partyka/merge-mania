@@ -1,6 +1,6 @@
 import { useRef, useCallback, useEffect } from "react";
 import { NumberBlock } from "./NumberBlock";
-import { GRID_COLS, GRID_ROWS, type Block } from "@shared/schema";
+import { type Block } from "@shared/schema";
 import { cn } from "@/lib/utils";
 
 interface GameGridProps {
@@ -33,8 +33,12 @@ export function GameGrid({
   const lastBlockRef = useRef<string | null>(null);
   const isGestureActiveRef = useRef(false);
   
+  // Get grid dimensions from the actual grid data
+  const gridRows = grid.length;
+  const gridCols = grid[0]?.length || 5;
+  
   const blockSize = Math.min(
-    (window.innerWidth - 48) / GRID_COLS,
+    (window.innerWidth - 48) / gridCols,
     60
   );
   const gap = 8;
@@ -47,8 +51,8 @@ export function GameGrid({
     const rect = gridRef.current.getBoundingClientRect();
     const bounds: CellBounds[] = [];
     
-    for (let row = 0; row < GRID_ROWS; row++) {
-      for (let col = 0; col < GRID_COLS; col++) {
+    for (let row = 0; row < gridRows; row++) {
+      for (let col = 0; col < gridCols; col++) {
         const left = rect.left + padding + col * (blockSize + gap);
         const top = rect.top + padding + row * (blockSize + gap);
         bounds.push({
@@ -63,7 +67,7 @@ export function GameGrid({
     }
     
     cellBoundsRef.current = bounds;
-  }, [blockSize, gap, padding]);
+  }, [blockSize, gap, padding, gridRows, gridCols]);
 
   // Get block at touch position using cached bounds
   const getBlockAtPosition = useCallback((clientX: number, clientY: number): Block | null => {
@@ -155,12 +159,12 @@ export function GameGrid({
       <div 
         className="grid gap-2"
         style={{
-          gridTemplateColumns: `repeat(${GRID_COLS}, ${blockSize}px)`,
-          gridTemplateRows: `repeat(${GRID_ROWS}, ${blockSize}px)`
+          gridTemplateColumns: `repeat(${gridCols}, ${blockSize}px)`,
+          gridTemplateRows: `repeat(${gridRows}, ${blockSize}px)`
         }}
       >
-        {Array.from({ length: GRID_ROWS }).map((_, rowIndex) =>
-          Array.from({ length: GRID_COLS }).map((_, colIndex) => {
+        {Array.from({ length: gridRows }).map((_, rowIndex) =>
+          Array.from({ length: gridCols }).map((_, colIndex) => {
             const block = grid[rowIndex]?.[colIndex];
             const inPath = block ? isBlockInPath(block) : false;
             
