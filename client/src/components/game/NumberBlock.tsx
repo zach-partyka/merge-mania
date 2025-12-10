@@ -35,7 +35,7 @@ export function NumberBlock({
       className={cn(
         "relative flex items-center justify-center rounded-xl font-game-display font-bold text-white select-none transition-all duration-75",
         getFontSize(),
-        block.isNew && "animate-block-drop",
+        block.isNew && block.value >= 256 ? "animate-shake" : block.isNew && "animate-block-pop",
         block.isMerging && "animate-block-merge"
       )}
       style={{

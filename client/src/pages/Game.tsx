@@ -23,7 +23,6 @@ export default function Game() {
   
   const {
     gameState,
-    showCombo,
     showRewardModal,
     handleTouchStart,
     handleTouchMove,
@@ -43,8 +42,6 @@ export default function Game() {
   if (!isMobile) {
     return <DesktopBlocker />;
   }
-
-  const isNewBest = gameState.score > 0 && gameState.score >= gameState.personalBest;
 
   return (
     <div 
@@ -67,10 +64,9 @@ export default function Game() {
         </div>
         
         <ScoreDisplay
-          score={gameState.score}
-          personalBest={gameState.personalBest}
-          comboMultiplier={gameState.comboMultiplier}
-          showCombo={showCombo}
+          highestNumber={gameState.highestNumber}
+          progressLevel={gameState.progressLevel}
+          difficulty={gameState.difficulty}
         />
         
         <Button
@@ -168,10 +164,8 @@ export default function Game() {
 
       <GameOverModal
         isOpen={gameState.isGameOver}
-        score={gameState.score}
-        personalBest={gameState.personalBest}
+        progressLevel={gameState.progressLevel}
         highestNumber={gameState.highestNumber}
-        isNewBest={isNewBest}
         onPlayAgain={restartGame}
       />
 

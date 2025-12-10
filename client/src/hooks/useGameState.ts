@@ -122,7 +122,6 @@ function createInitialState(): GameState {
 
 export function useGameState() {
   const [gameState, setGameState] = useState<GameState>(createInitialState);
-  const [showCombo, setShowCombo] = useState(false);
   const [showRewardModal, setShowRewardModal] = useState(false);
   const [pendingRewards, setPendingRewards] = useState(0);
 
@@ -351,12 +350,11 @@ export function useGameState() {
       newValue = chainResult;
     }
     
-    // Simplified scoring: newValue × comboMultiplier only
-    // Combo bonus: +25% per consecutive merge, max 2x (at combo 4+)
-    const comboMultiplier = 1 + Math.min(gameState.combo * 0.25, 1);
-    // Apply difficulty score multiplier (fallback to normal if undefined)
+    // Progress-based scoring: sum of original block values (no combo multiplier)
+    // This keeps score increments small and predictable
+    const sumOfOriginalValues = selectedBlocks.reduce((sum, b) => sum + b.value, 0);
     const difficultyConfig = DIFFICULTY_CONFIGS[gameState.difficulty] || DIFFICULTY_CONFIGS.normal;
-    const mergeScore = Math.round(newValue * comboMultiplier * difficultyConfig.scoreMultiplier);
+    const progressEarned = Math.round(sumOfOriginalValues * difficultyConfig.powerUpMultiplier);
     
     setGameState(prev => {
       const newGrid = prev.grid.map(row => [...row]);
@@ -416,18 +414,8 @@ export function useGameState() {
         }
       }
       
-      // Calculate progress points from score (keeps score and progress connected)
-      const config = DIFFICULTY_CONFIGS[prev.difficulty] || DIFFICULTY_CONFIGS.normal;
-      const progressEarned = Math.round(mergeScore * config.powerUpMultiplier);
+      // Progress is the new "score" - no separate score tracking
       let newProgressPoints = prev.progressPoints + progressEarned;
-      
-      // Check for score-based power-up earning (also affected by difficulty)
-      const adjustedThreshold = Math.round(SCORE_POWERUP_THRESHOLD / config.powerUpMultiplier);
-      const previousThreshold = Math.floor(prev.score / adjustedThreshold);
-      const newThreshold = Math.floor((prev.score + mergeScore) / adjustedThreshold);
-      if (newThreshold > previousThreshold) {
-        setPendingRewards(r => r + (newThreshold - previousThreshold));
-      }
       
       // Check for progress bar rewards (use dynamic threshold)
       const currentThreshold = getProgressThreshold(prev.difficulty, prev.progressLevel);
@@ -438,31 +426,19 @@ export function useGameState() {
         newProgressLevel = prev.progressLevel + 1;
       }
       
-      // Update personal best
-      const newScore = prev.score + mergeScore;
-      const newPersonalBest = Math.max(prev.personalBest, newScore);
-      
       return {
         ...prev,
         grid: newGrid,
-        score: newScore,
-        personalBest: newPersonalBest,
-        combo: prev.combo + 1,
-        comboMultiplier,
         highestNumber: newHighest,
         eliminatedNumbers: newEliminated,
         progressPoints: newProgressPoints,
         progressLevel: newProgressLevel,
         selectedBlocks: [],
-        unlockedMilestones: newMilestones
+        unlockedMilestones: newMilestones,
+        combo: 0,
+        comboMultiplier: 1
       };
     });
-    
-    // Show combo indicator
-    if (gameState.combo > 0) {
-      setShowCombo(true);
-      setTimeout(() => setShowCombo(false), 600);
-    }
     
     triggerHaptic("medium");
     
@@ -615,12 +591,15 @@ export function useGameState() {
           isMerging: false
         };
         
-        const mergeScore = newValue * blocksToMerge.length;
+        // Calculate progress from sum of original block values
+        const sumOfOriginalValues = blocksToMerge.reduce((sum, b) => sum + b.value, 0);
+        const config = DIFFICULTY_CONFIGS[prev.difficulty] || DIFFICULTY_CONFIGS.normal;
+        const progressEarned = Math.round(sumOfOriginalValues * config.powerUpMultiplier);
         
         return {
           ...prev,
           grid: newGrid,
-          score: prev.score + mergeScore,
+          progressPoints: prev.progressPoints + progressEarned,
           highestNumber: Math.max(prev.highestNumber, newValue),
           powerUps: {
             ...prev.powerUps,
@@ -756,7 +735,6 @@ export function useGameState() {
 
   return {
     gameState,
-    showCombo,
     showRewardModal,
     handleTouchStart,
     handleTouchMove,

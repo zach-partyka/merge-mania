@@ -1,22 +1,18 @@
-import { Trophy, RotateCcw, Star } from "lucide-react";
+import { Trophy, RotateCcw } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { formatNumber } from "@shared/schema";
 
 interface GameOverModalProps {
   isOpen: boolean;
-  score: number;
-  personalBest: number;
+  progressLevel: number;
   highestNumber: number;
-  isNewBest: boolean;
   onPlayAgain: () => void;
 }
 
 export function GameOverModal({ 
   isOpen, 
-  score, 
-  personalBest,
+  progressLevel,
   highestNumber,
-  isNewBest,
   onPlayAgain 
 }: GameOverModalProps) {
   if (!isOpen) return null;
@@ -28,43 +24,27 @@ export function GameOverModal({
     >
       <div className="bg-game-grid rounded-2xl p-6 w-full max-w-xs flex flex-col items-center">
         {/* Header */}
-        <h2 className="font-game-display text-3xl font-bold text-white mb-2">
+        <h2 className="font-game-display text-3xl font-bold text-white mb-4">
           Game Over
         </h2>
         
-        {/* New best indicator */}
-        {isNewBest && (
-          <div className="flex items-center gap-2 text-yellow-400 mb-4 animate-pulse">
-            <Star className="w-5 h-5 fill-yellow-400" />
-            <span className="font-game-display font-bold">New Best!</span>
-            <Star className="w-5 h-5 fill-yellow-400" />
-          </div>
-        )}
-        
-        {/* Score display */}
+        {/* Stats display */}
         <div className="bg-game-bg rounded-xl p-6 w-full mb-6">
-          <div className="text-center mb-4">
-            <div className="text-white/60 font-game text-sm mb-1">Final Score</div>
-            <div 
-              className={`font-game-display text-4xl font-bold ${isNewBest ? "text-yellow-300" : "text-white"}`}
-              data-testid="final-score"
-            >
-              {formatNumber(score)}
-            </div>
-          </div>
-          
-          <div className="flex justify-between items-center text-sm">
-            <div className="text-center">
-              <div className="text-white/60 font-game">Best</div>
-              <div className="flex items-center gap-1 text-yellow-400 font-game-display font-bold">
-                <Trophy className="w-4 h-4" />
-                {formatNumber(personalBest)}
+          <div className="flex justify-between items-center">
+            <div className="text-center flex-1">
+              <div className="text-white/60 font-game text-sm mb-1">Level</div>
+              <div 
+                className="font-game-display text-3xl font-bold text-white"
+                data-testid="final-level"
+              >
+                {progressLevel + 1}
               </div>
             </div>
             
-            <div className="text-center">
-              <div className="text-white/60 font-game">Highest</div>
-              <div className="text-white font-game-display font-bold">
+            <div className="text-center flex-1">
+              <div className="text-white/60 font-game text-sm mb-1">Highest</div>
+              <div className="flex items-center justify-center gap-1 text-yellow-400 font-game-display text-2xl font-bold">
+                <Trophy className="w-5 h-5" />
                 {formatNumber(highestNumber)}
               </div>
             </div>
