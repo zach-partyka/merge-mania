@@ -121,6 +121,7 @@ export default function Game() {
           onTouchStart={handleTouchStart}
           onTouchMove={handleTouchMove}
           onTouchEnd={handleTouchEnd}
+          difficulty={gameState.difficulty}
         />
       </main>
 
@@ -131,6 +132,7 @@ export default function Game() {
           activePowerUp={gameState.activePowerUp}
           onPowerUpSelect={activatePowerUp}
           disabled={gameState.isGameOver || gameState.isPaused}
+          difficulty={gameState.difficulty}
         />
       </footer>
 

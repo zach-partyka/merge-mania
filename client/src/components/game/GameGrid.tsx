@@ -3,12 +3,15 @@ import { NumberBlock } from "./NumberBlock";
 import { type Block } from "@shared/schema";
 import { cn } from "@/lib/utils";
 
+import { type DifficultyLevel } from "@shared/schema";
+
 interface GameGridProps {
   grid: (Block | null)[][];
   selectedBlocks: Block[];
   onTouchStart: (block: Block) => void;
   onTouchMove: (block: Block) => void;
   onTouchEnd: () => void;
+  difficulty?: DifficultyLevel;
 }
 
 interface CellBounds {
@@ -25,7 +28,8 @@ export function GameGrid({
   selectedBlocks,
   onTouchStart,
   onTouchMove,
-  onTouchEnd
+  onTouchEnd,
+  difficulty = "normal"
 }: GameGridProps) {
   const gridRef = useRef<HTMLDivElement>(null);
   const cellBoundsRef = useRef<CellBounds[]>([]);
@@ -37,9 +41,10 @@ export function GameGrid({
   const gridRows = grid.length;
   const gridCols = grid[0]?.length || 5;
   
+  const maxBlockSize = difficulty === "kids" ? 90 : 60;
   const blockSize = Math.min(
     (window.innerWidth - 48) / gridCols,
-    60
+    maxBlockSize
   );
   const gap = 8;
   const padding = 12;
