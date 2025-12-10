@@ -139,13 +139,24 @@ export function GameGrid({
     return selectedBlocks.some(b => b.id === block.id);
   };
 
-  // Find the highest value block on the board
-  const highestValue = grid.reduce((max, row) => {
-    return row.reduce((rowMax, block) => {
-      if (block && block.value > rowMax) return block.value;
-      return rowMax;
-    }, max);
-  }, 0);
+  // Find the highest value block on the board and its first occurrence
+  // Crown only shows for values > 64 (above starting numbers)
+  const MAX_STARTING_NUMBER = 64;
+  let highestValue = 0;
+  let crownBlockId: string | null = null;
+  
+  for (let r = 0; r < grid.length; r++) {
+    for (let c = 0; c < (grid[r]?.length || 0); c++) {
+      const block = grid[r]?.[c];
+      if (block && block.value > highestValue) {
+        highestValue = block.value;
+        // Only set crown if above starting numbers
+        if (block.value > MAX_STARTING_NUMBER) {
+          crownBlockId = block.id;
+        }
+      }
+    }
+  }
 
   return (
     <div 
@@ -190,7 +201,7 @@ export function GameGrid({
                     block={block}
                     size={blockSize}
                     isInPath={inPath}
-                    isHighest={block.value === highestValue}
+                    isHighest={block.id === crownBlockId}
                     onTouchStart={onTouchStart}
                     onTouchEnter={onTouchMove}
                   />
