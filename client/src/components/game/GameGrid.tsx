@@ -31,6 +31,7 @@ export function GameGrid({
   const cellBoundsRef = useRef<CellBounds[]>([]);
   const rafRef = useRef<number | null>(null);
   const lastBlockRef = useRef<string | null>(null);
+  const isGestureActiveRef = useRef(false);
   
   const blockSize = Math.min(
     (window.innerWidth - 48) / GRID_COLS,
@@ -39,8 +40,8 @@ export function GameGrid({
   const gap = 8;
   const padding = 12;
 
-  // Cache cell bounds on mount and when grid changes
-  useEffect(() => {
+  // Recalculate cell bounds - called at gesture start to handle layout changes
+  const recalculateBounds = useCallback(() => {
     if (!gridRef.current) return;
     
     const rect = gridRef.current.getBoundingClientRect();
@@ -98,9 +99,16 @@ export function GameGrid({
     handlePointerMove(touch.clientX, touch.clientY);
   }, [handlePointerMove]);
 
+  // Handle touch start on grid - recalculate bounds for fresh gesture
+  const handleGridTouchStart = useCallback(() => {
+    recalculateBounds();
+    isGestureActiveRef.current = true;
+  }, [recalculateBounds]);
+
   // Handle touch end - clear refs
   const handleTouchEnd = useCallback(() => {
     lastBlockRef.current = null;
+    isGestureActiveRef.current = false;
     if (rafRef.current) {
       cancelAnimationFrame(rafRef.current);
       rafRef.current = null;
@@ -131,6 +139,7 @@ export function GameGrid({
       style={{
         boxShadow: "inset 0 4px 20px rgba(0,0,0,0.3)"
       }}
+      onTouchStart={handleGridTouchStart}
       onTouchMove={handleTouchMove}
       onTouchEnd={handleTouchEnd}
       onTouchCancel={handleTouchEnd}
