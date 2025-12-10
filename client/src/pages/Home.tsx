@@ -5,16 +5,11 @@ import { Button } from "@/components/ui/button";
 import { DesktopBlocker } from "@/components/game/DesktopBlocker";
 import { SettingsModal } from "@/components/game/SettingsModal";
 import { useIsMobile } from "@/hooks/useIsMobile";
-import { formatNumber } from "@shared/schema";
+import { type GameSettings } from "@shared/schema";
 
 const STORAGE_KEY = "numberMatch_gameState";
 const BEST_SCORE_KEY = "numberMatch_personalBest";
 const SETTINGS_KEY = "numberMatch_settings";
-
-interface GameSettings {
-  hapticEnabled: boolean;
-  soundEnabled: boolean;
-}
 
 export default function Home() {
   const isMobile = useIsMobile();
