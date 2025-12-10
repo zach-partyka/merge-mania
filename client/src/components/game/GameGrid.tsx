@@ -130,8 +130,6 @@ export function GameGrid({
     return selectedBlocks.some(b => b.id === block.id);
   };
 
-  const hasSelection = selectedBlocks.length > 0;
-
   return (
     <div 
       ref={gridRef}
@@ -175,7 +173,6 @@ export function GameGrid({
                     block={block}
                     size={blockSize}
                     isInPath={inPath}
-                    isDimmed={hasSelection && !inPath}
                     onTouchStart={onTouchStart}
                     onTouchEnter={onTouchMove}
                   />
@@ -195,19 +192,6 @@ export function GameGrid({
             height: "100%"
           }}
         >
-          <defs>
-            <linearGradient id="pathGradient" x1="0%" y1="0%" x2="100%" y2="100%">
-              <stop offset="0%" stopColor="rgba(255,255,255,1)" />
-              <stop offset="100%" stopColor="rgba(255,220,150,1)" />
-            </linearGradient>
-            <filter id="glow" x="-50%" y="-50%" width="200%" height="200%">
-              <feGaussianBlur stdDeviation="4" result="coloredBlur"/>
-              <feMerge>
-                <feMergeNode in="coloredBlur"/>
-                <feMergeNode in="SourceGraphic"/>
-              </feMerge>
-            </filter>
-          </defs>
           <ConnectionPath 
             blocks={selectedBlocks} 
             blockSize={blockSize} 
@@ -246,31 +230,21 @@ function ConnectionPath({
 
   return (
     <>
-      {/* Outer glow */}
+      {/* Subtle outer shadow */}
       <path
         d={pathData}
         fill="none"
-        stroke="rgba(255,255,255,0.2)"
-        strokeWidth={20}
-        strokeLinecap="round"
-        strokeLinejoin="round"
-        filter="url(#glow)"
-      />
-      {/* Mid glow */}
-      <path
-        d={pathData}
-        fill="none"
-        stroke="rgba(255,255,255,0.5)"
-        strokeWidth={12}
+        stroke="rgba(0,0,0,0.3)"
+        strokeWidth={10}
         strokeLinecap="round"
         strokeLinejoin="round"
       />
-      {/* Main line with gradient */}
+      {/* Main line - subtle white */}
       <path
         d={pathData}
         fill="none"
-        stroke="url(#pathGradient)"
-        strokeWidth={6}
+        stroke="rgba(255,255,255,0.6)"
+        strokeWidth={4}
         strokeLinecap="round"
         strokeLinejoin="round"
       />

@@ -5,7 +5,6 @@ interface NumberBlockProps {
   block: Block;
   size?: number;
   isInPath?: boolean;
-  isDimmed?: boolean;
   onTouchStart?: (block: Block) => void;
   onTouchEnter?: (block: Block) => void;
 }
@@ -14,7 +13,6 @@ export function NumberBlock({
   block, 
   size = 60,
   isInPath = false,
-  isDimmed = false,
   onTouchStart,
   onTouchEnter 
 }: NumberBlockProps) {
@@ -32,20 +30,19 @@ export function NumberBlock({
   return (
     <div
       className={cn(
-        "relative flex items-center justify-center rounded-xl font-game-display font-bold text-white select-none transition-all duration-100",
+        "relative flex items-center justify-center rounded-xl font-game-display font-bold text-white select-none transition-all duration-75",
         getFontSize(),
         block.isNew && "animate-block-drop",
-        block.isMerging && "animate-block-merge",
-        isDimmed && "opacity-40"
+        block.isMerging && "animate-block-merge"
       )}
       style={{
         width: size,
         height: size,
         backgroundColor: color,
         boxShadow: isInPath 
-          ? `0 0 0 3px white, 0 0 20px 4px rgba(255,255,255,0.6), 0 4px 0 0 ${adjustColor(color, -30)}, 0 6px 10px rgba(0,0,0,0.3)`
+          ? `0 2px 0 0 ${adjustColor(color, -40)}, 0 3px 6px rgba(0,0,0,0.4)`
           : `0 4px 0 0 ${adjustColor(color, -30)}, 0 6px 10px rgba(0,0,0,0.3)`,
-        transform: isInPath ? "scale(1.08)" : "scale(1)",
+        transform: isInPath ? "scale(0.92) translateY(2px)" : "scale(1)",
         zIndex: isInPath ? 10 : 1
       }}
       data-testid={`block-${block.row}-${block.col}`}
@@ -77,13 +74,10 @@ export function NumberBlock({
         </div>
       )}
 
-      {/* Selection glow ring */}
+      {/* Dark overlay when selected (pressed effect) */}
       {isInPath && (
         <div 
-          className="absolute inset-0 rounded-xl pointer-events-none"
-          style={{
-            boxShadow: "inset 0 0 8px rgba(255,255,255,0.5)"
-          }}
+          className="absolute inset-0 rounded-xl pointer-events-none bg-black/20"
         />
       )}
     </div>
