@@ -58,13 +58,16 @@ export const SCORE_POWERUP_THRESHOLD = 2500;
 
 // Progress bar base thresholds per difficulty (scales up each level)
 export const PROGRESS_BASE_THRESHOLD: Record<DifficultyLevel, number> = {
-  kids: 800,
-  normal: 1500,
-  hard: 2500,
+  kids: 600,
+  normal: 1000,
+  hard: 1500,
 };
 
 // Progress threshold scaling per level (percentage increase)
-export const PROGRESS_THRESHOLD_SCALING = 0.25; // 25% increase per level
+export const PROGRESS_THRESHOLD_SCALING = 0.35; // 35% increase per level
+
+// Points earned per block merged (decoupled from score)
+export const PROGRESS_POINTS_PER_BLOCK = 12;
 
 // Calculate dynamic progress threshold based on level and difficulty
 export function getProgressThreshold(difficulty: DifficultyLevel, progressLevel: number): number {
@@ -96,8 +99,8 @@ export const DIFFICULTY_CONFIGS: Record<DifficultyLevel, DifficultyConfig> = {
     description: "Smaller grid, easier gameplay",
     gridCols: 4,
     gridRows: 5,
-    scoreMultiplier: 1.5,
-    powerUpMultiplier: 1.5,
+    scoreMultiplier: 1.0,
+    powerUpMultiplier: 1.2,
   },
   normal: {
     label: "Normal",
@@ -112,8 +115,8 @@ export const DIFFICULTY_CONFIGS: Record<DifficultyLevel, DifficultyConfig> = {
     description: "For puzzle masters",
     gridCols: 5,
     gridRows: 7,
-    scoreMultiplier: 0.7,
-    powerUpMultiplier: 0.5,
+    scoreMultiplier: 1.0,
+    powerUpMultiplier: 0.7,
   },
 };
 
