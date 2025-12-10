@@ -1,4 +1,4 @@
-import { useRef, useCallback } from "react";
+import { useRef, useCallback, useEffect } from "react";
 import { NumberBlock } from "./NumberBlock";
 import { GRID_COLS, GRID_ROWS, type Block } from "@shared/schema";
 import { cn } from "@/lib/utils";
@@ -11,6 +11,15 @@ interface GameGridProps {
   onTouchEnd: () => void;
 }
 
+interface CellBounds {
+  row: number;
+  col: number;
+  left: number;
+  top: number;
+  right: number;
+  bottom: number;
+}
+
 export function GameGrid({
   grid,
   selectedBlocks,
@@ -19,45 +28,101 @@ export function GameGrid({
   onTouchEnd
 }: GameGridProps) {
   const gridRef = useRef<HTMLDivElement>(null);
+  const cellBoundsRef = useRef<CellBounds[]>([]);
+  const rafRef = useRef<number | null>(null);
+  const lastBlockRef = useRef<string | null>(null);
+  
   const blockSize = Math.min(
     (window.innerWidth - 48) / GRID_COLS,
     60
   );
+  const gap = 8;
+  const padding = 12;
 
-  // Get block at touch position
-  const getBlockAtPosition = useCallback((clientX: number, clientY: number): Block | null => {
-    if (!gridRef.current) return null;
+  // Cache cell bounds on mount and when grid changes
+  useEffect(() => {
+    if (!gridRef.current) return;
     
     const rect = gridRef.current.getBoundingClientRect();
-    const x = clientX - rect.left;
-    const y = clientY - rect.top;
+    const bounds: CellBounds[] = [];
     
-    const gap = 8;
-    const totalBlockWidth = blockSize + gap;
+    for (let row = 0; row < GRID_ROWS; row++) {
+      for (let col = 0; col < GRID_COLS; col++) {
+        const left = rect.left + padding + col * (blockSize + gap);
+        const top = rect.top + padding + row * (blockSize + gap);
+        bounds.push({
+          row,
+          col,
+          left,
+          top,
+          right: left + blockSize,
+          bottom: top + blockSize
+        });
+      }
+    }
     
-    const col = Math.floor(x / totalBlockWidth);
-    const row = Math.floor(y / totalBlockWidth);
+    cellBoundsRef.current = bounds;
+  }, [blockSize, gap, padding]);
+
+  // Get block at touch position using cached bounds
+  const getBlockAtPosition = useCallback((clientX: number, clientY: number): Block | null => {
+    const bounds = cellBoundsRef.current;
     
-    if (row >= 0 && row < GRID_ROWS && col >= 0 && col < GRID_COLS) {
-      return grid[row]?.[col] || null;
+    for (const cell of bounds) {
+      if (clientX >= cell.left && clientX <= cell.right &&
+          clientY >= cell.top && clientY <= cell.bottom) {
+        return grid[cell.row]?.[cell.col] || null;
+      }
     }
     return null;
-  }, [grid, blockSize]);
+  }, [grid]);
 
-  // Handle touch move to detect entering new blocks
+  // Handle pointer move with RAF throttling
+  const handlePointerMove = useCallback((clientX: number, clientY: number) => {
+    if (rafRef.current) return;
+    
+    rafRef.current = requestAnimationFrame(() => {
+      rafRef.current = null;
+      const block = getBlockAtPosition(clientX, clientY);
+      if (block && block.id !== lastBlockRef.current) {
+        lastBlockRef.current = block.id;
+        onTouchMove(block);
+      }
+    });
+  }, [getBlockAtPosition, onTouchMove]);
+
+  // Handle touch move
   const handleTouchMove = useCallback((e: React.TouchEvent) => {
     e.preventDefault();
     const touch = e.touches[0];
-    const block = getBlockAtPosition(touch.clientX, touch.clientY);
-    if (block) {
-      onTouchMove(block);
+    handlePointerMove(touch.clientX, touch.clientY);
+  }, [handlePointerMove]);
+
+  // Handle touch end - clear refs
+  const handleTouchEnd = useCallback(() => {
+    lastBlockRef.current = null;
+    if (rafRef.current) {
+      cancelAnimationFrame(rafRef.current);
+      rafRef.current = null;
     }
-  }, [getBlockAtPosition, onTouchMove]);
+    onTouchEnd();
+  }, [onTouchEnd]);
+
+  // Cleanup RAF on unmount
+  useEffect(() => {
+    return () => {
+      if (rafRef.current) {
+        cancelAnimationFrame(rafRef.current);
+      }
+    };
+  }, []);
 
   // Check if a block is in the current selection path
   const isBlockInPath = (block: Block): boolean => {
     return selectedBlocks.some(b => b.id === block.id);
   };
+
+  const hasSelection = selectedBlocks.length > 0;
 
   return (
     <div 
@@ -67,8 +132,8 @@ export function GameGrid({
         boxShadow: "inset 0 4px 20px rgba(0,0,0,0.3)"
       }}
       onTouchMove={handleTouchMove}
-      onTouchEnd={onTouchEnd}
-      onTouchCancel={onTouchEnd}
+      onTouchEnd={handleTouchEnd}
+      onTouchCancel={handleTouchEnd}
       data-testid="game-grid"
     >
       {/* Grid cells */}
@@ -82,12 +147,13 @@ export function GameGrid({
         {Array.from({ length: GRID_ROWS }).map((_, rowIndex) =>
           Array.from({ length: GRID_COLS }).map((_, colIndex) => {
             const block = grid[rowIndex]?.[colIndex];
+            const inPath = block ? isBlockInPath(block) : false;
             
             return (
               <div
                 key={`cell-${rowIndex}-${colIndex}`}
                 className={cn(
-                  "rounded-xl transition-all duration-150",
+                  "rounded-xl transition-all duration-100",
                   !block && "bg-game-grid-border/50 border-2 border-dashed border-game-grid-border"
                 )}
                 style={{
@@ -99,7 +165,8 @@ export function GameGrid({
                   <NumberBlock
                     block={block}
                     size={blockSize}
-                    isInPath={isBlockInPath(block)}
+                    isInPath={inPath}
+                    isDimmed={hasSelection && !inPath}
                     onTouchStart={onTouchStart}
                     onTouchEnter={onTouchMove}
                   />
@@ -119,11 +186,24 @@ export function GameGrid({
             height: "100%"
           }}
         >
+          <defs>
+            <linearGradient id="pathGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+              <stop offset="0%" stopColor="rgba(255,255,255,1)" />
+              <stop offset="100%" stopColor="rgba(255,220,150,1)" />
+            </linearGradient>
+            <filter id="glow" x="-50%" y="-50%" width="200%" height="200%">
+              <feGaussianBlur stdDeviation="4" result="coloredBlur"/>
+              <feMerge>
+                <feMergeNode in="coloredBlur"/>
+                <feMergeNode in="SourceGraphic"/>
+              </feMerge>
+            </filter>
+          </defs>
           <ConnectionPath 
             blocks={selectedBlocks} 
             blockSize={blockSize} 
-            gap={8}
-            padding={12}
+            gap={gap}
+            padding={padding}
           />
         </svg>
       )}
@@ -157,24 +237,33 @@ function ConnectionPath({
 
   return (
     <>
-      {/* Glow effect */}
+      {/* Outer glow */}
       <path
         d={pathData}
         fill="none"
-        stroke="rgba(255,255,255,0.3)"
+        stroke="rgba(255,255,255,0.2)"
+        strokeWidth={20}
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        filter="url(#glow)"
+      />
+      {/* Mid glow */}
+      <path
+        d={pathData}
+        fill="none"
+        stroke="rgba(255,255,255,0.5)"
         strokeWidth={12}
         strokeLinecap="round"
         strokeLinejoin="round"
       />
-      {/* Main line */}
+      {/* Main line with gradient */}
       <path
         d={pathData}
         fill="none"
-        stroke="rgba(255,255,255,0.9)"
-        strokeWidth={4}
+        stroke="url(#pathGradient)"
+        strokeWidth={6}
         strokeLinecap="round"
         strokeLinejoin="round"
-        strokeDasharray="none"
       />
     </>
   );

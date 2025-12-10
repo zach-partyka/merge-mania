@@ -143,11 +143,12 @@ export function generateBlockId(): string {
   return `block_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
 }
 
-// Check if two blocks are adjacent (horizontally or vertically)
+// Check if two blocks are adjacent (horizontally, vertically, or diagonally)
 export function areBlocksAdjacent(block1: Block, block2: Block): boolean {
   const rowDiff = Math.abs(block1.row - block2.row);
   const colDiff = Math.abs(block1.col - block2.col);
-  return (rowDiff === 1 && colDiff === 0) || (rowDiff === 0 && colDiff === 1);
+  // Adjacent if within 1 step in any direction (including diagonals)
+  return rowDiff <= 1 && colDiff <= 1 && (rowDiff > 0 || colDiff > 0);
 }
 
 // Zod schemas for validation

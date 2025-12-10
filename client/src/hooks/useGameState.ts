@@ -437,19 +437,23 @@ export function useGameState() {
     });
   }, [saveGameState]);
 
-  // Check if there are any valid moves left
+  // Check if there are any valid moves left (including diagonals)
   const checkForValidMoves = (grid: (Block | null)[][]): boolean => {
     for (let row = 0; row < GRID_ROWS; row++) {
       for (let col = 0; col < GRID_COLS; col++) {
         const block = grid[row][col];
         if (!block) continue;
         
-        // Check adjacent blocks for same value
+        // Check all 8 adjacent blocks for same value (including diagonals)
         const neighbors = [
-          grid[row - 1]?.[col],
-          grid[row + 1]?.[col],
-          grid[row]?.[col - 1],
-          grid[row]?.[col + 1]
+          grid[row - 1]?.[col],     // up
+          grid[row + 1]?.[col],     // down
+          grid[row]?.[col - 1],     // left
+          grid[row]?.[col + 1],     // right
+          grid[row - 1]?.[col - 1], // up-left
+          grid[row - 1]?.[col + 1], // up-right
+          grid[row + 1]?.[col - 1], // down-left
+          grid[row + 1]?.[col + 1]  // down-right
         ];
         
         if (neighbors.some(n => n && n.value === block.value)) {

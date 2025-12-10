@@ -5,6 +5,7 @@ interface NumberBlockProps {
   block: Block;
   size?: number;
   isInPath?: boolean;
+  isDimmed?: boolean;
   onTouchStart?: (block: Block) => void;
   onTouchEnter?: (block: Block) => void;
 }
@@ -13,6 +14,7 @@ export function NumberBlock({
   block, 
   size = 60,
   isInPath = false,
+  isDimmed = false,
   onTouchStart,
   onTouchEnter 
 }: NumberBlockProps) {
@@ -30,18 +32,21 @@ export function NumberBlock({
   return (
     <div
       className={cn(
-        "relative flex items-center justify-center rounded-xl font-game-display font-bold text-white select-none transition-all duration-150",
+        "relative flex items-center justify-center rounded-xl font-game-display font-bold text-white select-none transition-all duration-100",
         getFontSize(),
-        block.isSelected && "ring-4 ring-white/80 ring-offset-2 ring-offset-game-bg",
-        isInPath && "ring-2 ring-white/60",
         block.isNew && "animate-block-drop",
-        block.isMerging && "animate-block-merge"
+        block.isMerging && "animate-block-merge",
+        isDimmed && "opacity-40"
       )}
       style={{
         width: size,
         height: size,
         backgroundColor: color,
-        boxShadow: `0 4px 0 0 ${adjustColor(color, -30)}, 0 6px 10px rgba(0,0,0,0.3)`,
+        boxShadow: isInPath 
+          ? `0 0 0 3px white, 0 0 20px 4px rgba(255,255,255,0.6), 0 4px 0 0 ${adjustColor(color, -30)}, 0 6px 10px rgba(0,0,0,0.3)`
+          : `0 4px 0 0 ${adjustColor(color, -30)}, 0 6px 10px rgba(0,0,0,0.3)`,
+        transform: isInPath ? "scale(1.08)" : "scale(1)",
+        zIndex: isInPath ? 10 : 1
       }}
       data-testid={`block-${block.row}-${block.col}`}
       data-value={block.value}
@@ -70,6 +75,16 @@ export function NumberBlock({
         <div className="absolute -top-2 left-1/2 -translate-x-1/2 text-yellow-300 text-sm">
           ♛
         </div>
+      )}
+
+      {/* Selection glow ring */}
+      {isInPath && (
+        <div 
+          className="absolute inset-0 rounded-xl pointer-events-none"
+          style={{
+            boxShadow: "inset 0 0 8px rgba(255,255,255,0.5)"
+          }}
+        />
       )}
     </div>
   );
