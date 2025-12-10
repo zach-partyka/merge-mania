@@ -1,18 +1,192 @@
-import { sql } from "drizzle-orm";
-import { pgTable, text, varchar } from "drizzle-orm/pg-core";
-import { createInsertSchema } from "drizzle-zod";
 import { z } from "zod";
 
-export const users = pgTable("users", {
-  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
-  username: text("username").notNull().unique(),
-  password: text("password").notNull(),
+// Number values in the game (powers of 2)
+export const NUMBER_VALUES = [
+  2, 4, 8, 16, 32, 64, 128, 256, 512, 1024,
+  2048, 4096, 8192, 16384, 32768, 65536,
+  131072, 262144, 524288, 1048576
+] as const;
+
+export type NumberValue = typeof NUMBER_VALUES[number];
+
+// Display labels for large numbers
+export const NUMBER_LABELS: Record<number, string> = {
+  2: "2", 4: "4", 8: "8", 16: "16", 32: "32", 64: "64",
+  128: "128", 256: "256", 512: "512", 1024: "1024",
+  2048: "2K", 4096: "4K", 8192: "8K", 16384: "16K",
+  32768: "32K", 65536: "64K", 131072: "131K", 262144: "262K",
+  524288: "524K", 1048576: "1M"
+};
+
+// Color mapping for each number value (Apollo palette inspired)
+export const NUMBER_COLORS: Record<number, string> = {
+  2: "#4a90a4",
+  4: "#5da3b5",
+  8: "#70b6c6",
+  16: "#83c9d7",
+  32: "#2d8659",
+  64: "#3fa96f",
+  128: "#52bc82",
+  256: "#65cf95",
+  512: "#d4a655",
+  1024: "#e6b865",
+  2048: "#f8ca75",
+  4096: "#c75e76",
+  8192: "#d97189",
+  16384: "#eb849c",
+  32768: "#7a4b94",
+  65536: "#8d5ea7",
+  131072: "#a071ba",
+  262144: "#b384cd",
+  524288: "#c79740",
+  1048576: "#daa550"
+};
+
+// Milestones that trigger number elimination
+export const ELIMINATION_MILESTONES: Record<number, number> = {
+  1048576: 16,    // At 1M, eliminate all 16s
+  524288: 8,      // At 524K, eliminate all 8s
+  262144: 4,      // At 262K, eliminate all 4s
+  131072: 2,      // At 131K, eliminate all 2s
+};
+
+// Milestones that grant power-ups
+export const POWERUP_MILESTONES = [128, 512, 2048, 8192, 32768, 131072, 524288, 1048576];
+
+// Score threshold for earning power-ups
+export const SCORE_POWERUP_THRESHOLD = 2500;
+
+// Progress bar threshold for rewards
+export const PROGRESS_REWARD_THRESHOLD = 1000;
+
+// Grid dimensions
+export const GRID_COLS = 5;
+export const GRID_ROWS = 7;
+
+// Power-up types
+export type PowerUpType = "remove" | "swap" | "mergeAll";
+
+// Block in the grid
+export interface Block {
+  id: string;
+  value: number;
+  row: number;
+  col: number;
+  isSelected: boolean;
+  isNew: boolean;
+  isMerging: boolean;
+}
+
+// Power-up state
+export interface PowerUps {
+  remove: number;
+  swap: number;
+  mergeAll: number;
+}
+
+// Game state
+export interface GameState {
+  grid: (Block | null)[][];
+  score: number;
+  personalBest: number;
+  combo: number;
+  comboMultiplier: number;
+  powerUps: PowerUps;
+  highestNumber: number;
+  eliminatedNumbers: number[];
+  progressPoints: number;
+  selectedBlocks: Block[];
+  isGameOver: boolean;
+  isPaused: boolean;
+  activePowerUp: PowerUpType | null;
+  swapFirstBlock: Block | null;
+  settings: GameSettings;
+  unlockedMilestones: number[];
+}
+
+// Game settings
+export interface GameSettings {
+  hapticEnabled: boolean;
+  soundEnabled: boolean;
+}
+
+// Initial power-up counts
+export const INITIAL_POWERUPS: PowerUps = {
+  remove: 1,
+  swap: 1,
+  mergeAll: 1
+};
+
+// Max power-up capacity
+export const MAX_POWERUP_COUNT = 5;
+
+// Starting numbers for new blocks (before any eliminations)
+export const STARTING_NUMBERS = [2, 4, 8, 16, 32, 64];
+
+// Helper to get available spawn numbers based on eliminated numbers
+export function getAvailableSpawnNumbers(eliminatedNumbers: number[]): number[] {
+  return STARTING_NUMBERS.filter(n => !eliminatedNumbers.includes(n));
+}
+
+// Helper to format number for display
+export function formatNumber(value: number): string {
+  return NUMBER_LABELS[value] || value.toString();
+}
+
+// Helper to get color for a number
+export function getBlockColor(value: number): string {
+  return NUMBER_COLORS[value] || "#888888";
+}
+
+// Generate unique block ID
+export function generateBlockId(): string {
+  return `block_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+}
+
+// Check if two blocks are adjacent (horizontally or vertically)
+export function areBlocksAdjacent(block1: Block, block2: Block): boolean {
+  const rowDiff = Math.abs(block1.row - block2.row);
+  const colDiff = Math.abs(block1.col - block2.col);
+  return (rowDiff === 1 && colDiff === 0) || (rowDiff === 0 && colDiff === 1);
+}
+
+// Zod schemas for validation
+export const blockSchema = z.object({
+  id: z.string(),
+  value: z.number(),
+  row: z.number(),
+  col: z.number(),
+  isSelected: z.boolean(),
+  isNew: z.boolean(),
+  isMerging: z.boolean()
 });
 
-export const insertUserSchema = createInsertSchema(users).pick({
-  username: true,
-  password: true,
+export const powerUpsSchema = z.object({
+  remove: z.number().min(0).max(MAX_POWERUP_COUNT),
+  swap: z.number().min(0).max(MAX_POWERUP_COUNT),
+  mergeAll: z.number().min(0).max(MAX_POWERUP_COUNT)
 });
 
-export type InsertUser = z.infer<typeof insertUserSchema>;
-export type User = typeof users.$inferSelect;
+export const gameSettingsSchema = z.object({
+  hapticEnabled: z.boolean(),
+  soundEnabled: z.boolean()
+});
+
+export const gameStateSchema = z.object({
+  grid: z.array(z.array(blockSchema.nullable())),
+  score: z.number(),
+  personalBest: z.number(),
+  combo: z.number(),
+  comboMultiplier: z.number(),
+  powerUps: powerUpsSchema,
+  highestNumber: z.number(),
+  eliminatedNumbers: z.array(z.number()),
+  progressPoints: z.number(),
+  selectedBlocks: z.array(blockSchema),
+  isGameOver: z.boolean(),
+  isPaused: z.boolean(),
+  activePowerUp: z.enum(["remove", "swap", "mergeAll"]).nullable(),
+  swapFirstBlock: blockSchema.nullable(),
+  settings: gameSettingsSchema,
+  unlockedMilestones: z.array(z.number())
+});
