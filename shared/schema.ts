@@ -93,7 +93,7 @@ export interface DifficultyConfig {
 // Difficulty presets
 export const DIFFICULTY_CONFIGS: Record<DifficultyLevel, DifficultyConfig> = {
   kids: {
-    label: "Kids",
+    label: "Play",
     description: "Smaller grid, easier gameplay",
     gridCols: 4,
     gridRows: 5,
