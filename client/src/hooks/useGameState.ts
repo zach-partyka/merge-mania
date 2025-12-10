@@ -27,7 +27,9 @@ import {
 import {
   useGamePersistence,
   loadDifficulty,
-  loadSettings
+  loadSettings,
+  loadBestProgress,
+  saveBestProgress
 } from "./useGamePersistence";
 
 function createInitialState(): GameState {
@@ -62,7 +64,7 @@ export function useGameState() {
   const [showRewardModal, setShowRewardModal] = useState(false);
   const [pendingRewards, setPendingRewards] = useState(0);
 
-  const { saveGameState, saveSettings, clearGameState } = useGamePersistence();
+  const { saveGameState, saveSettings, clearAllProgress } = useGamePersistence();
 
   const removeTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   const dropTimeoutRef = useRef<NodeJS.Timeout | null>(null);
@@ -97,6 +99,13 @@ export function useGameState() {
       };
       
       saveGameState(newState);
+      
+      const currentBest = loadBestProgress();
+      const totalProgress = newState.progressPoints + (newState.progressLevel * 1000);
+      if (totalProgress > currentBest) {
+        saveBestProgress(totalProgress);
+      }
+      
       return newState;
     });
   }, [saveGameState]);
@@ -423,11 +432,11 @@ export function useGameState() {
   }, [saveSettings]);
 
   const resetAllProgress = useCallback(() => {
-    clearGameState();
+    clearAllProgress();
     setGameState(createInitialState());
     setShowRewardModal(false);
     setPendingRewards(0);
-  }, [clearGameState]);
+  }, [clearAllProgress]);
 
   useEffect(() => {
     try {

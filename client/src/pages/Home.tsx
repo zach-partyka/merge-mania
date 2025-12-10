@@ -8,7 +8,7 @@ import { useIsMobile } from "@/hooks/useIsMobile";
 import { type GameSettings } from "@shared/schema";
 
 const STORAGE_KEY = "numberMatch_gameState";
-const BEST_SCORE_KEY = "numberMatch_personalBest";
+const BEST_PROGRESS_KEY = "numberMatch_bestProgress";
 const SETTINGS_KEY = "numberMatch_settings";
 
 export default function Home() {
@@ -21,9 +21,9 @@ export default function Home() {
   const [settings, setSettings] = useState<GameSettings>({ hapticEnabled: true, soundEnabled: true });
 
   useEffect(() => {
-    // Load personal best
+    // Load personal best (now based on progress)
     try {
-      const best = localStorage.getItem(BEST_SCORE_KEY);
+      const best = localStorage.getItem(BEST_PROGRESS_KEY);
       if (best) {
         setPersonalBest(parseInt(best, 10));
       }
@@ -36,9 +36,10 @@ export default function Home() {
       const saved = localStorage.getItem(STORAGE_KEY);
       if (saved) {
         const state = JSON.parse(saved);
-        if (state.score > 0 && !state.isGameOver) {
+        const totalProgress = (state.progressPoints || 0) + ((state.progressLevel || 0) * 1000);
+        if (totalProgress > 0 && !state.isGameOver) {
           setHasSavedGame(true);
-          setSavedScore(state.score);
+          setSavedScore(totalProgress);
         }
       }
     } catch (e) {
@@ -75,7 +76,7 @@ export default function Home() {
 
   const handleResetProgress = () => {
     localStorage.removeItem(STORAGE_KEY);
-    localStorage.removeItem(BEST_SCORE_KEY);
+    localStorage.removeItem(BEST_PROGRESS_KEY);
     setPersonalBest(0);
     setHasSavedGame(false);
     setSavedScore(0);

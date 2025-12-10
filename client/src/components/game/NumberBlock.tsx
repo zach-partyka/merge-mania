@@ -71,6 +71,15 @@ export function NumberBlock({
       onTouchMove={(e) => {
         e.preventDefault();
       }}
+      onMouseDown={(e) => {
+        e.preventDefault();
+        onTouchStart?.(block);
+      }}
+      onMouseEnter={(e) => {
+        if (e.buttons === 1) {
+          onTouchEnter?.(block);
+        }
+      }}
     >
       <span className={cn("relative z-10 drop-shadow-md", getChainShakeClass())}>{label}</span>
       

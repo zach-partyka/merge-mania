@@ -173,6 +173,9 @@ export function GameGrid({
       onTouchMove={handleTouchMove}
       onTouchEnd={handleTouchEnd}
       onTouchCancel={handleTouchEnd}
+      onMouseDown={handleGridTouchStart}
+      onMouseUp={handleTouchEnd}
+      onMouseLeave={handleTouchEnd}
       data-testid="game-grid"
     >
       {/* Grid cells */}

@@ -4,6 +4,7 @@ import type { GameState, GameSettings, DifficultyLevel } from "@shared/schema";
 const STORAGE_KEY = "numberMatch_gameState";
 const SETTINGS_KEY = "numberMatch_settings";
 const DIFFICULTY_KEY = "numberMatch_difficulty";
+const BEST_PROGRESS_KEY = "numberMatch_bestProgress";
 const DEBOUNCE_MS = 500;
 
 export function loadDifficulty(): DifficultyLevel {
@@ -40,6 +41,26 @@ export function loadGameState(): GameState | null {
     console.error("Failed to load game state:", e);
   }
   return null;
+}
+
+export function loadBestProgress(): number {
+  try {
+    const stored = localStorage.getItem(BEST_PROGRESS_KEY);
+    if (stored) {
+      return parseInt(stored, 10);
+    }
+  } catch (e) {
+    console.error("Failed to load best progress:", e);
+  }
+  return 0;
+}
+
+export function saveBestProgress(progress: number): void {
+  try {
+    localStorage.setItem(BEST_PROGRESS_KEY, progress.toString());
+  } catch (e) {
+    console.error("Failed to save best progress:", e);
+  }
 }
 
 export function useGamePersistence() {
@@ -117,11 +138,21 @@ export function useGamePersistence() {
     }
   }, []);
 
+  const clearAllProgress = useCallback(() => {
+    try {
+      localStorage.removeItem(STORAGE_KEY);
+      localStorage.removeItem(BEST_PROGRESS_KEY);
+    } catch (e) {
+      console.error("Failed to clear all progress:", e);
+    }
+  }, []);
+
   return {
     saveGameState,
     saveGameStateImmediate,
     saveSettings,
     saveDifficulty,
-    clearGameState
+    clearGameState,
+    clearAllProgress
   };
 }
