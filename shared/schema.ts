@@ -58,16 +58,13 @@ export const SCORE_POWERUP_THRESHOLD = 2500;
 
 // Progress bar base thresholds per difficulty (scales up each level)
 export const PROGRESS_BASE_THRESHOLD: Record<DifficultyLevel, number> = {
-  kids: 600,
-  normal: 1000,
-  hard: 1500,
+  kids: 3000,
+  normal: 5000,
+  hard: 8000,
 };
 
 // Progress threshold scaling per level (percentage increase)
 export const PROGRESS_THRESHOLD_SCALING = 0.35; // 35% increase per level
-
-// Points earned per block merged (decoupled from score)
-export const PROGRESS_POINTS_PER_BLOCK = 12;
 
 // Calculate dynamic progress threshold based on level and difficulty
 export function getProgressThreshold(difficulty: DifficultyLevel, progressLevel: number): number {
