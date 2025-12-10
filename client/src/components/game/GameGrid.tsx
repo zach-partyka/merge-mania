@@ -8,6 +8,8 @@ import { type DifficultyLevel } from "@shared/schema";
 interface GameGridProps {
   grid: (Block | null)[][];
   selectedBlocks: Block[];
+  swapFirstBlock?: Block | null;
+  mergeAllTargetValue?: number | null;
   onTouchStart: (block: Block) => void;
   onTouchMove: (block: Block) => void;
   onTouchEnd: () => void;
@@ -26,6 +28,8 @@ interface CellBounds {
 export function GameGrid({
   grid,
   selectedBlocks,
+  swapFirstBlock,
+  mergeAllTargetValue,
   onTouchStart,
   onTouchMove,
   onTouchEnd,
@@ -203,6 +207,8 @@ export function GameGrid({
                     isInPath={inPath}
                     chainLength={inPath ? selectedBlocks.length : 0}
                     isHighest={block.id === crownBlockId}
+                    isSwapFirst={swapFirstBlock?.id === block.id}
+                    isMergeTarget={mergeAllTargetValue !== null && block.value === mergeAllTargetValue}
                     onTouchStart={onTouchStart}
                     onTouchEnter={onTouchMove}
                   />

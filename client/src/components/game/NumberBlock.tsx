@@ -8,6 +8,8 @@ interface NumberBlockProps {
   isInPath?: boolean;
   chainLength?: number;
   isHighest?: boolean;
+  isSwapFirst?: boolean;
+  isMergeTarget?: boolean;
   onTouchStart?: (block: Block) => void;
   onTouchEnter?: (block: Block) => void;
 }
@@ -18,6 +20,8 @@ export function NumberBlock({
   isInPath = false,
   chainLength = 0,
   isHighest = false,
+  isSwapFirst = false,
+  isMergeTarget = false,
   onTouchStart,
   onTouchEnter 
 }: NumberBlockProps) {
@@ -91,6 +95,20 @@ export function NumberBlock({
       {isInPath && (
         <div 
           className="absolute inset-0 rounded-xl pointer-events-none bg-black/20"
+        />
+      )}
+      
+      {/* Swap first block highlight */}
+      {isSwapFirst && (
+        <div 
+          className="absolute inset-0 rounded-xl pointer-events-none ring-4 ring-purple-400 animate-pulse"
+        />
+      )}
+      
+      {/* Merge all target highlight */}
+      {isMergeTarget && (
+        <div 
+          className="absolute inset-0 rounded-xl pointer-events-none ring-4 ring-blue-400 animate-pulse"
         />
       )}
     </div>

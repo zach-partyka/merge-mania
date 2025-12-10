@@ -160,6 +160,7 @@ export interface GameState {
   isPaused: boolean;
   activePowerUp: PowerUpType | null;
   swapFirstBlock: Block | null;
+  mergeAllTargetValue: number | null;
   settings: GameSettings;
   unlockedMilestones: number[];
   difficulty: DifficultyLevel;

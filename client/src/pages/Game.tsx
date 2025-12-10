@@ -10,6 +10,7 @@ import { PauseModal } from "@/components/game/PauseModal";
 import { SettingsModal } from "@/components/game/SettingsModal";
 import { GameOverModal } from "@/components/game/GameOverModal";
 import { RewardModal } from "@/components/game/RewardModal";
+import { MergeAllPicker } from "@/components/game/MergeAllPicker";
 import { DesktopBlocker } from "@/components/game/DesktopBlocker";
 import { useGameState } from "@/hooks/useGameState";
 import { useIsMobile } from "@/hooks/useIsMobile";
@@ -29,6 +30,8 @@ export default function Game() {
     handleTouchEnd,
     activatePowerUp,
     cancelPowerUp,
+    selectMergeAllTarget,
+    executeMergeAll,
     handleSelectReward,
     handleSaveForLater,
     togglePause,
@@ -88,7 +91,7 @@ export default function Game() {
       />
 
       {/* Active power-up indicator */}
-      {gameState.activePowerUp && (
+      {gameState.activePowerUp && gameState.activePowerUp !== "mergeAll" && (
         <div className="flex items-center gap-2 mt-3 px-4 py-2 bg-white/10 rounded-full">
           <span className="font-game text-white text-sm">
             {gameState.activePowerUp === "remove" && "Tap a block to remove it"}
@@ -118,6 +121,8 @@ export default function Game() {
         <GameGrid
           grid={gameState.grid}
           selectedBlocks={gameState.selectedBlocks}
+          swapFirstBlock={gameState.swapFirstBlock}
+          mergeAllTargetValue={gameState.mergeAllTargetValue}
           onTouchStart={handleTouchStart}
           onTouchMove={handleTouchMove}
           onTouchEnd={handleTouchEnd}
@@ -174,6 +179,17 @@ export default function Game() {
         onSelectPowerUp={handleSelectReward}
         onSaveForLater={handleSaveForLater}
       />
+
+      {/* Merge All Picker */}
+      {gameState.activePowerUp === "mergeAll" && (
+        <MergeAllPicker
+          grid={gameState.grid}
+          selectedValue={gameState.mergeAllTargetValue}
+          onSelectValue={selectMergeAllTarget}
+          onConfirm={executeMergeAll}
+          onCancel={cancelPowerUp}
+        />
+      )}
     </div>
   );
 }

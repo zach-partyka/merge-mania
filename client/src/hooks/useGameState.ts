@@ -114,6 +114,7 @@ function createInitialState(): GameState {
     isPaused: false,
     activePowerUp: null,
     swapFirstBlock: null,
+    mergeAllTargetValue: null,
     settings: loadSettings(),
     unlockedMilestones: [],
     difficulty
@@ -162,24 +163,33 @@ export function useGameState() {
     
     // Handle power-up activation
     if (gameState.activePowerUp === "remove") {
-      // Remove the block
-      setGameState(prev => {
-        const newGrid = prev.grid.map(row => [...row]);
-        newGrid[block.row][block.col] = null;
-        
-        return {
-          ...prev,
-          grid: newGrid,
-          activePowerUp: null,
-          powerUps: {
-            ...prev.powerUps,
-            remove: prev.powerUps.remove - 1
-          }
-        };
-      });
-      triggerHaptic("heavy");
-      // Trigger block dropping
-      setTimeout(() => dropBlocks(), 100);
+      // Highlight the block first, then remove after a brief delay
+      setGameState(prev => ({
+        ...prev,
+        selectedBlocks: [block]
+      }));
+      triggerHaptic("light");
+      
+      // Remove after visual feedback delay
+      setTimeout(() => {
+        setGameState(prev => {
+          const newGrid = prev.grid.map(row => [...row]);
+          newGrid[block.row][block.col] = null;
+          
+          return {
+            ...prev,
+            grid: newGrid,
+            activePowerUp: null,
+            selectedBlocks: [],
+            powerUps: {
+              ...prev.powerUps,
+              remove: prev.powerUps.remove - 1
+            }
+          };
+        });
+        triggerHaptic("heavy");
+        setTimeout(() => dropBlocks(), 100);
+      }, 300);
       return;
     }
 
@@ -533,83 +543,13 @@ export function useGameState() {
     if (gameState.powerUps[type] === 0) return;
     
     if (type === "mergeAll") {
-      // Find the most common number and merge all of them
-      const valueCounts: Record<number, Block[]> = {};
-      const gridRows = gameState.grid.length;
-      const gridCols = gameState.grid[0]?.length || 0;
-      
-      for (let row = 0; row < gridRows; row++) {
-        for (let col = 0; col < gridCols; col++) {
-          const block = gameState.grid[row][col];
-          if (block) {
-            if (!valueCounts[block.value]) {
-              valueCounts[block.value] = [];
-            }
-            valueCounts[block.value].push(block);
-          }
-        }
-      }
-      
-      // Find value with most blocks (at least 2)
-      let maxCount = 0;
-      let targetValue = 0;
-      
-      for (const [value, blocks] of Object.entries(valueCounts)) {
-        if (blocks.length > maxCount && blocks.length >= 2) {
-          maxCount = blocks.length;
-          targetValue = parseInt(value);
-        }
-      }
-      
-      if (targetValue === 0) return; // No valid targets
-      
-      const blocksToMerge = valueCounts[targetValue];
-      
-      setGameState(prev => {
-        const newGrid = prev.grid.map(row => [...row]);
-        
-        // Calculate merged value
-        let newValue = targetValue;
-        for (let i = 1; i < blocksToMerge.length; i++) {
-          newValue *= 2;
-        }
-        
-        // Remove all but the last block
-        blocksToMerge.slice(0, -1).forEach(block => {
-          newGrid[block.row][block.col] = null;
-        });
-        
-        // Update the last block with new value
-        const lastBlock = blocksToMerge[blocksToMerge.length - 1];
-        newGrid[lastBlock.row][lastBlock.col] = {
-          id: generateBlockId(),
-          value: newValue,
-          row: lastBlock.row,
-          col: lastBlock.col,
-          isSelected: false,
-          isNew: true,
-          isMerging: false
-        };
-        
-        // Calculate progress from sum of original block values
-        const sumOfOriginalValues = blocksToMerge.reduce((sum, b) => sum + b.value, 0);
-        const config = DIFFICULTY_CONFIGS[prev.difficulty] || DIFFICULTY_CONFIGS.normal;
-        const progressEarned = Math.round(sumOfOriginalValues * config.powerUpMultiplier);
-        
-        return {
-          ...prev,
-          grid: newGrid,
-          progressPoints: prev.progressPoints + progressEarned,
-          highestNumber: Math.max(prev.highestNumber, newValue),
-          powerUps: {
-            ...prev.powerUps,
-            mergeAll: prev.powerUps.mergeAll - 1
-          }
-        };
-      });
-      
-      triggerHaptic("heavy");
-      setTimeout(() => dropBlocks(), 300);
+      // Set active mode to show number picker
+      setGameState(prev => ({
+        ...prev,
+        activePowerUp: type,
+        mergeAllTargetValue: null
+      }));
+      triggerHaptic("light");
       return;
     }
     
@@ -617,7 +557,8 @@ export function useGameState() {
     setGameState(prev => ({
       ...prev,
       activePowerUp: type,
-      swapFirstBlock: null
+      swapFirstBlock: null,
+      mergeAllTargetValue: null
     }));
     
     triggerHaptic("light");
@@ -628,9 +569,105 @@ export function useGameState() {
     setGameState(prev => ({
       ...prev,
       activePowerUp: null,
-      swapFirstBlock: null
+      swapFirstBlock: null,
+      mergeAllTargetValue: null,
+      selectedBlocks: []
     }));
   }, []);
+  
+  // Select target value for merge all power-up
+  const selectMergeAllTarget = useCallback((targetValue: number) => {
+    // Find all blocks with this value and highlight them
+    const blocksToHighlight: Block[] = [];
+    const gridRows = gameState.grid.length;
+    const gridCols = gameState.grid[0]?.length || 0;
+    
+    for (let row = 0; row < gridRows; row++) {
+      for (let col = 0; col < gridCols; col++) {
+        const block = gameState.grid[row][col];
+        if (block && block.value === targetValue) {
+          blocksToHighlight.push(block);
+        }
+      }
+    }
+    
+    setGameState(prev => ({
+      ...prev,
+      mergeAllTargetValue: targetValue,
+      selectedBlocks: blocksToHighlight
+    }));
+    triggerHaptic("light");
+  }, [gameState.grid, triggerHaptic]);
+  
+  // Execute merge all with selected target value
+  const executeMergeAll = useCallback(() => {
+    const targetValue = gameState.mergeAllTargetValue;
+    if (!targetValue) return;
+    
+    const blocksToMerge: Block[] = [];
+    const gridRows = gameState.grid.length;
+    const gridCols = gameState.grid[0]?.length || 0;
+    
+    for (let row = 0; row < gridRows; row++) {
+      for (let col = 0; col < gridCols; col++) {
+        const block = gameState.grid[row][col];
+        if (block && block.value === targetValue) {
+          blocksToMerge.push(block);
+        }
+      }
+    }
+    
+    if (blocksToMerge.length < 2) return;
+    
+    setGameState(prev => {
+      const newGrid = prev.grid.map(row => [...row]);
+      
+      // Calculate merged value
+      let newValue = targetValue;
+      for (let i = 1; i < blocksToMerge.length; i++) {
+        newValue *= 2;
+      }
+      
+      // Remove all but the last block
+      blocksToMerge.slice(0, -1).forEach(block => {
+        newGrid[block.row][block.col] = null;
+      });
+      
+      // Update the last block with new value
+      const lastBlock = blocksToMerge[blocksToMerge.length - 1];
+      newGrid[lastBlock.row][lastBlock.col] = {
+        id: generateBlockId(),
+        value: newValue,
+        row: lastBlock.row,
+        col: lastBlock.col,
+        isSelected: false,
+        isNew: true,
+        isMerging: false
+      };
+      
+      // Calculate progress from sum of original block values
+      const sumOfOriginalValues = blocksToMerge.reduce((sum, b) => sum + b.value, 0);
+      const config = DIFFICULTY_CONFIGS[prev.difficulty] || DIFFICULTY_CONFIGS.normal;
+      const progressEarned = Math.round(sumOfOriginalValues * config.powerUpMultiplier);
+      
+      return {
+        ...prev,
+        grid: newGrid,
+        progressPoints: prev.progressPoints + progressEarned,
+        highestNumber: Math.max(prev.highestNumber, newValue),
+        activePowerUp: null,
+        mergeAllTargetValue: null,
+        selectedBlocks: [],
+        powerUps: {
+          ...prev.powerUps,
+          mergeAll: prev.powerUps.mergeAll - 1
+        }
+      };
+    });
+    
+    triggerHaptic("heavy");
+    setTimeout(() => dropBlocks(), 300);
+  }, [gameState.grid, gameState.mergeAllTargetValue, triggerHaptic, dropBlocks]);
 
   // Handle reward selection
   const handleSelectReward = useCallback((type: PowerUpType) => {
@@ -741,6 +778,8 @@ export function useGameState() {
     handleTouchEnd,
     activatePowerUp,
     cancelPowerUp,
+    selectMergeAllTarget,
+    executeMergeAll,
     handleSelectReward,
     handleSaveForLater,
     togglePause,
