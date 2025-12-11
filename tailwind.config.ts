@@ -13,34 +13,44 @@ export default {
         "2xl": "1rem", /* 16px */
       },
       colors: {
-        // Apollo color palette for number blocks
+        // Premium Minimal color palette for game
         game: {
-          bg: "#1a1a2e",
-          "bg-dark": "#16162a",
-          grid: "#252541",
-          "grid-border": "#2d2d4a",
+          bg: "#0f1419", /* Deep slate - darker, more sophisticated */
+          "bg-dark": "#0a0d11", /* Even darker for contrast */
+          grid: "#1a1f29", /* Subtle grid background */
+          "grid-border": "#252b38", /* Muted borders */
+          primary: "#7c3aed", /* Deep purple */
+          accent: "#fb7185", /* Rose gold */
+          success: "#14b8a6", /* Teal for wins */
         },
+        // Premium number block progression: Purple → Violet → Rose → Teal
+        // Designed for clear differentiation and sophisticated aesthetic
         block: {
-          2: "#4a90a4",
-          4: "#5da3b5",
-          8: "#70b6c6",
-          16: "#83c9d7",
-          32: "#2d8659",
-          64: "#3fa96f",
-          128: "#52bc82",
-          256: "#65cf95",
-          512: "#d4a655",
-          1024: "#e6b865",
-          "2k": "#f8ca75",
-          "4k": "#c75e76",
-          "8k": "#d97189",
-          "16k": "#eb849c",
-          "32k": "#7a4b94",
-          "64k": "#8d5ea7",
-          "131k": "#a071ba",
-          "262k": "#b384cd",
-          "524k": "#c79740",
-          "1m": "#daa550",
+          // Early game: Cool purples (readable, calm)
+          2: "#8b5cf6",    /* Vibrant purple */
+          4: "#a78bfa",    /* Light purple */
+          8: "#c4b5fd",    /* Pale purple */
+          16: "#ddd6fe",   /* Very pale purple */
+          // Mid game: Deeper purples (more intense)
+          32: "#7c3aed",   /* Deep purple (brand color) */
+          64: "#6d28d9",   /* Royal purple */
+          128: "#5b21b6",  /* Dark purple */
+          256: "#4c1d95",  /* Very dark purple */
+          // High numbers: Rose/pink (warm, exciting)
+          512: "#fb7185",  /* Rose gold (accent color) */
+          1024: "#f472b6", /* Pink */
+          "2k": "#e879f9", /* Fuchsia */
+          "4k": "#d946ef", /* Magenta */
+          // Very high: Teal/cyan (success, achievement)
+          "8k": "#14b8a6", /* Teal (success color) */
+          "16k": "#06b6d4", /* Cyan */
+          "32k": "#0891b2", /* Dark cyan */
+          "64k": "#0e7490", /* Darker cyan */
+          // Ultra high: Gold/amber (prestige)
+          "131k": "#f59e0b", /* Amber */
+          "262k": "#d97706", /* Dark amber */
+          "524k": "#b45309", /* Darker amber */
+          "1m": "#92400e",  /* Very dark amber */
         },
         // Flat / base colors (regular buttons)
         background: "hsl(var(--background) / <alpha-value>)",
@@ -149,8 +159,8 @@ export default {
           "100%": { transform: "scale(1) translateY(-20px)", opacity: "0" },
         },
         "pulse-glow": {
-          "0%, 100%": { boxShadow: "0 0 0 0 rgba(255, 255, 255, 0.4)" },
-          "50%": { boxShadow: "0 0 20px 10px rgba(255, 255, 255, 0.2)" },
+          "0%, 100%": { boxShadow: "0 0 0 0 rgba(124, 58, 237, 0.4)" },
+          "50%": { boxShadow: "0 0 20px 10px rgba(124, 58, 237, 0.2)" },
         },
         "shake": {
           "0%, 100%": { transform: "translateX(0)" },
@@ -190,8 +200,8 @@ export default {
           "100%": { transform: "scale(1, 1)" },
         },
         "glow-fade": {
-          "0%": { boxShadow: "0 0 20px 8px rgba(255, 255, 255, 0.6), 0 0 40px 16px rgba(255, 200, 100, 0.4)" },
-          "100%": { boxShadow: "0 0 0 0 rgba(255, 255, 255, 0), 0 0 0 0 rgba(255, 200, 100, 0)" },
+          "0%": { boxShadow: "0 0 20px 8px rgba(124, 58, 237, 0.6), 0 0 40px 16px rgba(251, 113, 133, 0.4)" },
+          "100%": { boxShadow: "0 0 0 0 rgba(124, 58, 237, 0), 0 0 0 0 rgba(251, 113, 133, 0)" },
         },
         "sparkle": {
           "0%": { transform: "scale(0) rotate(0deg)", opacity: "1" },

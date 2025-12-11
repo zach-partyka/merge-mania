@@ -93,48 +93,60 @@
   --opaque-button-border-intensity: 9;
   --elevate-1: rgba(255,255,255, .04);
   --elevate-2: rgba(255,255,255, .09);
-  --background: 240 6% 10%;
-  --foreground: 240 5% 96%;
-  --border: 240 6% 20%;
-  --card: 240 6% 12%;
-  --card-foreground: 240 5% 96%;
-  --card-border: 240 6% 16%;
-  --sidebar: 240 6% 14%;
-  --sidebar-foreground: 240 5% 94%;
-  --sidebar-border: 240 6% 18%;
-  --sidebar-primary: 262 83% 58%;
+
+  /* Premium Minimal Dark Palette */
+  --background: 222 21% 10%; /* Deep slate background */
+  --foreground: 210 20% 98%; /* Crisp white text */
+  --border: 222 17% 18%; /* Subtle borders */
+  --card: 222 20% 12%; /* Elevated surfaces */
+  --card-foreground: 210 20% 98%;
+  --card-border: 222 17% 16%;
+  --sidebar: 222 20% 13%;
+  --sidebar-foreground: 210 20% 96%;
+  --sidebar-border: 222 17% 17%;
+
+  /* Deep Purple Primary (60% usage) */
+  --sidebar-primary: 262 80% 60%; /* #7c3aed adjusted for dark */
   --sidebar-primary-foreground: 0 0% 100%;
-  --sidebar-accent: 240 8% 20%;
-  --sidebar-accent-foreground: 240 5% 90%;
-  --sidebar-ring: 262 83% 58%;
-  --popover: 240 6% 16%;
-  --popover-foreground: 240 5% 94%;
-  --popover-border: 240 6% 20%;
-  --primary: 262 83% 58%;
+  --sidebar-accent: 222 18% 20%;
+  --sidebar-accent-foreground: 210 20% 92%;
+  --sidebar-ring: 262 80% 60%;
+  --popover: 222 20% 14%;
+  --popover-foreground: 210 20% 96%;
+  --popover-border: 222 17% 18%;
+
+  --primary: 262 80% 60%; /* Deep Purple */
   --primary-foreground: 0 0% 100%;
-  --secondary: 240 8% 20%;
-  --secondary-foreground: 240 5% 92%;
-  --muted: 240 8% 18%;
-  --muted-foreground: 240 4% 64%;
-  --accent: 188 92% 69%;
-  --accent-foreground: 188 10% 10%;
+  --secondary: 222 18% 22%; /* Muted slate (30% usage) */
+  --secondary-foreground: 210 20% 94%;
+  --muted: 222 17% 18%;
+  --muted-foreground: 222 10% 64%;
+
+  /* Rose Gold Accent (10% usage) */
+  --accent: 349 80% 65%; /* #fb7185 - rose gold */
+  --accent-foreground: 210 20% 98%;
+
   --destructive: 0 84% 60%;
   --destructive-foreground: 0 0% 100%;
-  --input: 240 6% 35%;
-  --ring: 262 83% 58%;
-  --chart-1: 262 83% 68%;
-  --chart-2: 188 92% 65%;
-  --chart-3: 340 82% 65%;
-  --chart-4: 43 96% 66%;
-  --chart-5: 162 73% 60%;
-  --shadow-2xs: 0px 2px 0px 0px hsl(240 6% 0% / 0.20);
-  --shadow-xs: 0px 2px 0px 0px hsl(240 6% 0% / 0.25);
-  --shadow-sm: 0px 2px 0px 0px hsl(240 6% 0% / 0.20), 0px 1px 2px -1px hsl(240 6% 0% / 0.30);
-  --shadow: 0px 2px 0px 0px hsl(240 6% 0% / 0.20), 0px 1px 2px -1px hsl(240 6% 0% / 0.30);
-  --shadow-md: 0px 2px 0px 0px hsl(240 6% 0% / 0.20), 0px 2px 4px -1px hsl(240 6% 0% / 0.35);
-  --shadow-lg: 0px 2px 0px 0px hsl(240 6% 0% / 0.20), 0px 4px 6px -1px hsl(240 6% 0% / 0.40);
-  --shadow-xl: 0px 2px 0px 0px hsl(240 6% 0% / 0.20), 0px 8px 10px -1px hsl(240 6% 0% / 0.45);
-  --shadow-2xl: 0px 2px 0px 0px hsl(240 6% 0% / 0.50);
+  --input: 222 18% 30%;
+  --ring: 262 80% 60%;
+
+  /* Updated chart colors for purple theme */
+  --chart-1: 262 80% 68%; /* Purple */
+  --chart-2: 174 72% 56%; /* Teal */
+  --chart-3: 349 80% 65%; /* Rose gold */
+  --chart-4: 43 90% 66%; /* Gold */
+  --chart-5: 284 70% 60%; /* Violet */
+
+  /* Enhanced shadows for depth */
+  --shadow-2xs: 0px 1px 0px 0px hsl(222 21% 0% / 0.25);
+  --shadow-xs: 0px 2px 0px 0px hsl(222 21% 0% / 0.30);
+  --shadow-sm: 0px 2px 0px 0px hsl(222 21% 0% / 0.25), 0px 2px 4px -1px hsl(222 21% 0% / 0.35);
+  --shadow: 0px 2px 0px 0px hsl(222 21% 0% / 0.25), 0px 2px 4px -1px hsl(222 21% 0% / 0.35);
+  --shadow-md: 0px 2px 0px 0px hsl(222 21% 0% / 0.25), 0px 4px 6px -1px hsl(222 21% 0% / 0.40);
+  --shadow-lg: 0px 2px 0px 0px hsl(222 21% 0% / 0.25), 0px 6px 10px -2px hsl(222 21% 0% / 0.45);
+  --shadow-xl: 0px 2px 0px 0px hsl(222 21% 0% / 0.25), 0px 12px 20px -4px hsl(222 21% 0% / 0.50);
+  --shadow-2xl: 0px 4px 0px 0px hsl(222 21% 0% / 0.60);
 
 /* Fallback for older browsers */
   --sidebar-primary-border: hsl(var(--sidebar-primary));
