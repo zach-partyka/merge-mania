@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useLocation } from "wouter";
-import { Pause, X } from "lucide-react";
+import { Settings, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { GameGrid } from "@/components/game/GameGrid";
 import { ScoreDisplay } from "@/components/game/ScoreDisplay";
@@ -56,15 +56,8 @@ export default function Game() {
       data-testid="game-screen"
     >
       {/* Header */}
-      <header className="w-full flex items-center justify-between px-4 py-3">
-        <div className="w-16 flex items-center">
-          <span 
-            className="font-game text-xs text-white/50 uppercase tracking-wide"
-            data-testid="text-difficulty"
-          >
-            {DIFFICULTY_CONFIGS[gameState.difficulty]?.label || "Normal"}
-          </span>
-        </div>
+      <header className="w-full flex items-center justify-between gap-2 px-4 py-3">
+        <div className="w-10" />
         
         <ScoreDisplay
           highestNumber={gameState.highestNumber}
@@ -79,7 +72,7 @@ export default function Game() {
           className="text-white/60 hover:text-white hover:bg-white/10"
           data-testid="button-pause"
         >
-          <Pause className="w-6 h-6" />
+          <Settings className="w-6 h-6" />
         </Button>
       </header>
 

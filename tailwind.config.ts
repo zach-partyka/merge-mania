@@ -182,6 +182,26 @@ export default {
           "60%": { transform: "translateX(-3px) rotate(-1.5deg)" },
           "80%": { transform: "translateX(3px) rotate(1.5deg)" },
         },
+        "squash-stretch": {
+          "0%": { transform: "scale(0.3, 0.3)" },
+          "30%": { transform: "scale(1.15, 0.85)" },
+          "50%": { transform: "scale(0.9, 1.1)" },
+          "70%": { transform: "scale(1.05, 0.95)" },
+          "100%": { transform: "scale(1, 1)" },
+        },
+        "glow-fade": {
+          "0%": { boxShadow: "0 0 20px 8px rgba(255, 255, 255, 0.6), 0 0 40px 16px rgba(255, 200, 100, 0.4)" },
+          "100%": { boxShadow: "0 0 0 0 rgba(255, 255, 255, 0), 0 0 0 0 rgba(255, 200, 100, 0)" },
+        },
+        "sparkle": {
+          "0%": { transform: "scale(0) rotate(0deg)", opacity: "1" },
+          "50%": { transform: "scale(1) rotate(180deg)", opacity: "1" },
+          "100%": { transform: "scale(0) rotate(360deg)", opacity: "0" },
+        },
+        "confetti-fall": {
+          "0%": { transform: "translateY(0) rotate(0deg)", opacity: "1" },
+          "100%": { transform: "translateY(100px) rotate(720deg)", opacity: "0" },
+        },
       },
       animation: {
         "accordion-down": "accordion-down 0.2s ease-out",
@@ -197,6 +217,10 @@ export default {
         "chain-shake-subtle": "chain-shake-subtle 0.15s ease-in-out infinite",
         "chain-shake-medium": "chain-shake-medium 0.12s ease-in-out infinite",
         "chain-shake-intense": "chain-shake-intense 0.1s ease-in-out infinite",
+        "squash-stretch": "squash-stretch 0.35s cubic-bezier(0.34, 1.56, 0.64, 1)",
+        "glow-fade": "glow-fade 0.6s ease-out forwards",
+        "sparkle": "sparkle 0.5s ease-out forwards",
+        "confetti-fall": "confetti-fall 1s ease-out forwards",
       },
     },
   },

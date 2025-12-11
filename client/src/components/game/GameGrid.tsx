@@ -268,34 +268,13 @@ function ConnectionPath({
   }).join(" ");
 
   return (
-    <>
-      {/* Outer glow for visibility */}
-      <path
-        d={pathData}
-        fill="none"
-        stroke="rgba(255,255,0,0.4)"
-        strokeWidth={16}
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      />
-      {/* Middle glow */}
-      <path
-        d={pathData}
-        fill="none"
-        stroke="rgba(255,255,255,0.6)"
-        strokeWidth={10}
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      />
-      {/* Main line - bright yellow for high contrast */}
-      <path
-        d={pathData}
-        fill="none"
-        stroke="#FFDD00"
-        strokeWidth={5}
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      />
-    </>
+    <path
+      d={pathData}
+      fill="none"
+      stroke="rgba(255,255,255,0.85)"
+      strokeWidth={6}
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    />
   );
 }

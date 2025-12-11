@@ -1,3 +1,4 @@
+import { useEffect, useRef, useState } from "react";
 import { Gift } from "lucide-react";
 import { type DifficultyLevel, getProgressThreshold, formatNumber } from "@shared/schema";
 
@@ -8,9 +9,48 @@ interface ProgressBarProps {
   onRewardReady?: () => void;
 }
 
+function useAnimatedValue(target: number, duration: number = 300) {
+  const [value, setValue] = useState(target);
+  const animationRef = useRef<number | null>(null);
+  const startRef = useRef(value);
+  const startTimeRef = useRef(0);
+
+  useEffect(() => {
+    if (animationRef.current) {
+      cancelAnimationFrame(animationRef.current);
+    }
+
+    startRef.current = value;
+    startTimeRef.current = performance.now();
+
+    const animate = (currentTime: number) => {
+      const elapsed = currentTime - startTimeRef.current;
+      const progress = Math.min(elapsed / duration, 1);
+      const eased = 1 - Math.pow(1 - progress, 3);
+      
+      setValue(startRef.current + (target - startRef.current) * eased);
+
+      if (progress < 1) {
+        animationRef.current = requestAnimationFrame(animate);
+      }
+    };
+
+    animationRef.current = requestAnimationFrame(animate);
+
+    return () => {
+      if (animationRef.current) {
+        cancelAnimationFrame(animationRef.current);
+      }
+    };
+  }, [target, duration]);
+
+  return value;
+}
+
 export function ProgressBar({ progressPoints, difficulty, progressLevel }: ProgressBarProps) {
   const threshold = getProgressThreshold(difficulty, progressLevel);
-  const progress = Math.min(progressPoints / threshold, 1);
+  const animatedProgress = useAnimatedValue(progressPoints, 400);
+  const progress = Math.min(animatedProgress / threshold, 1);
   const isNearThreshold = progress >= 0.8;
   const isRewardReady = progressPoints >= threshold;
   

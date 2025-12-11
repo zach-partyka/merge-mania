@@ -1,3 +1,4 @@
+import { useEffect, useState } from "react";
 import { Gift, Eraser, ArrowLeftRight, Magnet, Bookmark } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { type PowerUpType } from "@shared/schema";
@@ -6,6 +7,40 @@ interface RewardModalProps {
   isOpen: boolean;
   onSelectPowerUp: (type: PowerUpType) => void;
   onSaveForLater: () => void;
+}
+
+function ConfettiEffect() {
+  const [particles, setParticles] = useState<Array<{ id: number; x: number; delay: number; color: string; rotation: number }>>([]);
+
+  useEffect(() => {
+    const colors = ["#FFD700", "#FF6B6B", "#4ECDC4", "#45B7D1", "#96CEB4", "#FFEAA7", "#DDA0DD", "#98D8C8"];
+    const newParticles = Array.from({ length: 24 }, (_, i) => ({
+      id: i,
+      x: Math.random() * 100,
+      delay: Math.random() * 0.3,
+      color: colors[Math.floor(Math.random() * colors.length)],
+      rotation: Math.random() * 360,
+    }));
+    setParticles(newParticles);
+  }, []);
+
+  return (
+    <div className="absolute inset-0 overflow-hidden pointer-events-none">
+      {particles.map((p) => (
+        <div
+          key={p.id}
+          className="absolute w-2 h-2 rounded-sm animate-confetti-fall"
+          style={{
+            left: `${p.x}%`,
+            top: "-10px",
+            backgroundColor: p.color,
+            animationDelay: `${p.delay}s`,
+            transform: `rotate(${p.rotation}deg)`,
+          }}
+        />
+      ))}
+    </div>
+  );
 }
 
 const powerUpOptions: { type: PowerUpType; icon: typeof Eraser; label: string; description: string; color: string }[] = [
@@ -40,7 +75,8 @@ export function RewardModal({ isOpen, onSelectPowerUp, onSaveForLater }: RewardM
       className="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-50 p-4"
       data-testid="reward-modal"
     >
-      <div className="bg-game-grid rounded-2xl p-6 w-full max-w-xs flex flex-col items-center">
+      <ConfettiEffect />
+      <div className="bg-game-grid rounded-2xl p-6 w-full max-w-xs flex flex-col items-center relative z-10">
         {/* Header with gift icon */}
         <div className="w-16 h-16 rounded-full bg-gradient-to-b from-yellow-400 to-orange-500 flex items-center justify-center mb-4 animate-pulse-glow">
           <Gift className="w-8 h-8 text-white" />
