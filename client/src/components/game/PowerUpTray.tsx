@@ -66,7 +66,7 @@ export function PowerUpTray({
               `relative ${buttonSize} rounded-full flex items-center justify-center transition-all duration-200`,
               "bg-gradient-to-b shadow-lg",
               config.color,
-              isActive && `ring-4 ${config.activeColor} scale-110`,
+              isActive && `ring-4 ${config.activeColor} scale-110 animate-pop-in`,
               isDisabled && "opacity-40 grayscale",
               !isDisabled && "active:scale-95"
             )}

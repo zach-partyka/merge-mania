@@ -22,7 +22,7 @@ export function GameOverModal({
       className="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-50 p-4"
       data-testid="gameover-modal"
     >
-      <div className="bg-game-grid rounded-2xl p-6 w-full max-w-xs flex flex-col items-center">
+      <div className="bg-game-grid rounded-2xl p-6 w-full max-w-xs flex flex-col items-center animate-bounce-in">
         {/* Header */}
         <h2 className="font-game-display text-3xl font-bold text-white mb-4">
           Game Over

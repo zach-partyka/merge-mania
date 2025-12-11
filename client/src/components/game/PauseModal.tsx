@@ -17,7 +17,7 @@ export function PauseModal({ isOpen, onResume, onRestart, onSettings, onQuit }: 
       className="fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center z-50 p-4"
       data-testid="pause-modal"
     >
-      <div className="bg-game-grid rounded-2xl p-6 w-full max-w-xs flex flex-col items-center gap-4">
+      <div className="bg-game-grid rounded-2xl p-6 w-full max-w-xs flex flex-col items-center gap-4 animate-bounce-in">
         <h2 className="font-game-display text-2xl font-bold text-white mb-2">
           Paused
         </h2>

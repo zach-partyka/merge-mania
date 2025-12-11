@@ -76,7 +76,7 @@ export function RewardModal({ isOpen, onSelectPowerUp, onSaveForLater }: RewardM
       data-testid="reward-modal"
     >
       <ConfettiEffect />
-      <div className="bg-game-grid rounded-2xl p-6 w-full max-w-xs flex flex-col items-center relative z-10">
+      <div className="bg-game-grid rounded-2xl p-6 w-full max-w-xs flex flex-col items-center relative z-10 animate-bounce-in">
         {/* Header with gift icon */}
         <div className="w-16 h-16 rounded-full bg-gradient-to-b from-yellow-400 to-orange-500 flex items-center justify-center mb-4 animate-pulse-glow">
           <Gift className="w-8 h-8 text-white" />

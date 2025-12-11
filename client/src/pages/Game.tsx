@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useCallback } from "react";
 import { useLocation } from "wouter";
 import { Settings, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -15,12 +15,13 @@ import { DesktopBlocker } from "@/components/game/DesktopBlocker";
 import { useGameState } from "@/hooks/useGameState";
 import { useIsMobile } from "@/hooks/useIsMobile";
 import { cn } from "@/lib/utils";
-import { DIFFICULTY_CONFIGS } from "@shared/schema";
+import { type PowerUpType } from "@shared/schema";
 
 export default function Game() {
   const isMobile = useIsMobile();
   const [, setLocation] = useLocation();
   const [showSettings, setShowSettings] = useState(false);
+  const [isShaking, setIsShaking] = useState(false);
   
   const {
     gameState,
@@ -41,6 +42,16 @@ export default function Game() {
     resetAllProgress
   } = useGameState();
 
+  const triggerScreenShake = useCallback(() => {
+    setIsShaking(true);
+    setTimeout(() => setIsShaking(false), 400);
+  }, []);
+
+  const handlePowerUpSelect = useCallback((type: PowerUpType) => {
+    activatePowerUp(type);
+    triggerScreenShake();
+  }, [activatePowerUp, triggerScreenShake]);
+
   // Show desktop blocker if not on mobile
   if (!isMobile) {
     return <DesktopBlocker />;
@@ -48,7 +59,10 @@ export default function Game() {
 
   return (
     <div 
-      className="min-h-screen bg-game-bg flex flex-col items-center select-none overflow-hidden"
+      className={cn(
+        "min-h-screen bg-game-bg flex flex-col items-center select-none overflow-hidden",
+        isShaking && "animate-screen-shake"
+      )}
       style={{ 
         paddingTop: "env(safe-area-inset-top)",
         paddingBottom: "env(safe-area-inset-bottom)"
@@ -128,7 +142,7 @@ export default function Game() {
         <PowerUpTray
           powerUps={gameState.powerUps}
           activePowerUp={gameState.activePowerUp}
-          onPowerUpSelect={activatePowerUp}
+          onPowerUpSelect={handlePowerUpSelect}
           disabled={gameState.isGameOver || gameState.isPaused}
           difficulty={gameState.difficulty}
         />
