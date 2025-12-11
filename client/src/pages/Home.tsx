@@ -21,7 +21,7 @@ export default function Home() {
   const [settings, setSettings] = useState<GameSettings>({ soundEnabled: true });
 
   useEffect(() => {
-    // Load personal best (now based on progress)
+    // Load personal best
     try {
       const best = localStorage.getItem(BEST_PROGRESS_KEY);
       if (best) {
@@ -96,31 +96,32 @@ export default function Home() {
       }}
       data-testid="home-screen"
     >
-      {/* Animated background gradient */}
+      {/* Subtle animated background - refined */}
       <div
-        className="absolute inset-0 opacity-20"
+        className="absolute inset-0 opacity-10"
         style={{
-          background: "radial-gradient(circle at 50% 50%, #16a34a 0%, transparent 70%)",
-          animation: "pulse 4s ease-in-out infinite"
+          background: "radial-gradient(circle at 50% 50%, #7c3aed 0%, transparent 60%)",
+          animation: "pulse 6s ease-in-out infinite"
         }}
       />
 
-      {/* Game title with gradient */}
+      {/* Game title with refined gradient */}
       <div className="text-center mb-12 relative z-10">
         <div className="inline-block">
           <h1
             className="font-game-display text-6xl font-black text-transparent bg-clip-text mb-2"
             style={{
-              backgroundImage: "linear-gradient(135deg, #ffffff 0%, #16a34a 100%)",
-              textShadow: "0 4px 20px rgba(22, 163, 74, 0.3)"
+              backgroundImage: "linear-gradient(90deg, #a78bfa 0%, #fb7185 100%)",
+              filter: "drop-shadow(0 2px 8px rgba(124, 58, 237, 0.3))"
             }}
           >
             Merge
           </h1>
           <h1
-            className="font-game-display text-6xl font-black text-game-accent drop-shadow-lg"
+            className="font-game-display text-6xl font-black text-transparent bg-clip-text"
             style={{
-              textShadow: "0 4px 20px rgba(22, 163, 74, 0.5)"
+              backgroundImage: "linear-gradient(90deg, #fb7185 0%, #f472b6 100%)",
+              filter: "drop-shadow(0 2px 8px rgba(251, 113, 133, 0.4))"
             }}
           >
             Mania
@@ -135,21 +136,12 @@ export default function Home() {
         </div>
       </div>
 
-      {/* High score display - enhanced */}
+      {/* High score display - refined */}
       {personalBest > 0 && (
         <div
-          className="bg-gradient-to-br from-white/15 to-white/5 backdrop-blur-sm rounded-2xl px-8 py-5 mb-10 text-center border border-white/10 shadow-xl relative overflow-hidden"
+          className="bg-white/5 backdrop-blur-sm rounded-2xl px-8 py-5 mb-10 text-center border border-white/10 shadow-xl relative overflow-hidden"
           data-testid="high-score-display"
         >
-          {/* Shine effect */}
-          <div
-            className="absolute inset-0 opacity-30"
-            style={{
-              background: "linear-gradient(45deg, transparent 30%, rgba(255,255,255,0.1) 50%, transparent 70%)",
-              backgroundSize: "200% 200%",
-              animation: "shine 3s ease-in-out infinite"
-            }}
-          />
           <div className="relative z-10">
             <div className="flex items-center justify-center gap-2 text-game-accent mb-2">
               <Trophy className="w-6 h-6" />
@@ -162,13 +154,16 @@ export default function Home() {
         </div>
       )}
 
-      {/* Action buttons - enhanced */}
+      {/* Action buttons - refined */}
       <div className="w-full max-w-sm space-y-4 relative z-10">
         {hasSavedGame ? (
           <>
             <Button
               onClick={handleContinue}
-              className="w-full h-16 text-xl font-game bg-gradient-to-r from-game-primary to-green-600 hover:from-green-600 hover:to-game-primary text-white rounded-2xl shadow-lg transition-all duration-300 hover:scale-105 hover:shadow-xl border-2 border-white/20"
+              className="w-full h-16 text-xl font-game text-white rounded-2xl shadow-lg transition-all duration-300 hover:scale-[1.02] border border-white/10"
+              style={{
+                background: "linear-gradient(90deg, #7c3aed 0%, #8b5cf6 100%)"
+              }}
               data-testid="button-continue"
             >
               <Play className="w-7 h-7 mr-3" />
@@ -180,7 +175,7 @@ export default function Home() {
             <Button
               onClick={handleNewGame}
               variant="outline"
-              className="w-full h-14 text-lg font-game border-2 border-white/30 text-white hover:bg-white/15 hover:border-white/50 rounded-2xl transition-all duration-300 hover:scale-105 backdrop-blur-sm"
+              className="w-full h-14 text-lg font-game border border-white/20 text-white hover:bg-white/10 rounded-2xl transition-all duration-300 hover:scale-[1.02] backdrop-blur-sm"
               data-testid="button-new-game"
             >
               <RotateCcw className="w-6 h-6 mr-2" />
@@ -190,7 +185,10 @@ export default function Home() {
         ) : (
           <Button
             onClick={handleNewGame}
-            className="w-full h-16 text-xl font-game bg-gradient-to-r from-game-primary to-green-600 hover:from-green-600 hover:to-game-primary text-white rounded-2xl shadow-lg transition-all duration-300 hover:scale-105 hover:shadow-xl border-2 border-white/20"
+            className="w-full h-16 text-xl font-game text-white rounded-2xl shadow-lg transition-all duration-300 hover:scale-[1.02] border border-white/10"
+            style={{
+              background: "linear-gradient(90deg, #7c3aed 0%, #8b5cf6 100%)"
+            }}
             data-testid="button-play"
           >
             <Play className="w-7 h-7 mr-3" />
@@ -210,7 +208,7 @@ export default function Home() {
         </Button>
       </div>
 
-      {/* How to play hint - enhanced */}
+      {/* How to play hint */}
       <div className="mt-10 text-center max-w-sm relative z-10">
         <p className="text-white/50 text-sm font-game leading-relaxed">
           Swipe to connect matching numbers and merge them into bigger values
@@ -227,13 +225,9 @@ export default function Home() {
       />
 
       <style jsx>{`
-        @keyframes shine {
-          0%, 100% { background-position: 200% 200%; }
-          50% { background-position: -200% -200%; }
-        }
         @keyframes pulse {
-          0%, 100% { opacity: 0.2; transform: scale(1); }
-          50% { opacity: 0.3; transform: scale(1.05); }
+          0%, 100% { opacity: 0.1; transform: scale(1); }
+          50% { opacity: 0.15; transform: scale(1.02); }
         }
       `}</style>
     </div>

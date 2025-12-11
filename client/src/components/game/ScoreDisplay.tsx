@@ -16,23 +16,22 @@ export function ScoreDisplay({
 
   return (
     <div className="flex flex-col items-center gap-2 w-full" data-testid="score-display">
-      {/* Highest number indicator with enhanced styling */}
+      {/* Highest number indicator with refined styling */}
       <div className="flex items-center gap-2 bg-white/5 backdrop-blur-sm px-4 py-1.5 rounded-full border border-white/10">
-        <Trophy className="w-4 h-4 text-yellow-400 drop-shadow-glow" />
+        <Trophy className="w-4 h-4 text-amber-400" />
         <span className="font-game text-sm font-semibold text-white/90" data-testid="highest-number">
           {formatNumber(highestNumber)}
         </span>
       </div>
 
-      {/* Level display with gradient */}
+      {/* Level display with refined gradient - 90° linear */}
       <div className="relative flex items-center gap-2">
         <Sparkles className="w-5 h-5 text-game-accent animate-pulse" />
         <span
           className={`font-game-display text-4xl font-black text-transparent bg-clip-text ${isKidsMode ? "animate-bounce-subtle" : ""}`}
           style={{
-            backgroundImage: "linear-gradient(135deg, #ffffff 0%, #16a34a 100%)",
-            textShadow: "0 2px 10px rgba(22, 163, 74, 0.3)",
-            filter: "drop-shadow(0 2px 4px rgba(0,0,0,0.3))"
+            backgroundImage: "linear-gradient(90deg, #a78bfa 0%, #fb7185 100%)",
+            filter: "drop-shadow(0 2px 8px rgba(124, 58, 237, 0.3))"
           }}
           data-testid="level-display"
         >
