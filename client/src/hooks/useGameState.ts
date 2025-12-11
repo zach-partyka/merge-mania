@@ -69,9 +69,11 @@ export function useGameState() {
   const removeTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   const dropTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   const mergeDropTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const isMountedRef = useRef(true);
 
   useEffect(() => {
     return () => {
+      isMountedRef.current = false;
       if (removeTimeoutRef.current) clearTimeout(removeTimeoutRef.current);
       if (dropTimeoutRef.current) clearTimeout(dropTimeoutRef.current);
       if (mergeDropTimeoutRef.current) clearTimeout(mergeDropTimeoutRef.current);
@@ -112,6 +114,8 @@ export function useGameState() {
       
       if (removeTimeoutRef.current) clearTimeout(removeTimeoutRef.current);
       removeTimeoutRef.current = setTimeout(() => {
+        if (!isMountedRef.current) return;
+
         setGameState(prev => {
           const result = executeRemovePowerUp(prev.grid, block, prev.powerUps);
           return {
@@ -122,9 +126,11 @@ export function useGameState() {
             powerUps: result.newPowerUps
           };
         });
-        
+
         if (dropTimeoutRef.current) clearTimeout(dropTimeoutRef.current);
-        dropTimeoutRef.current = setTimeout(() => dropBlocks(), 100);
+        dropTimeoutRef.current = setTimeout(() => {
+          if (isMountedRef.current) dropBlocks();
+        }, 100);
       }, 300);
       return;
     }
@@ -274,7 +280,9 @@ export function useGameState() {
     });
     
     if (dropTimeoutRef.current) clearTimeout(dropTimeoutRef.current);
-    dropTimeoutRef.current = setTimeout(() => dropBlocks(), 300);
+    dropTimeoutRef.current = setTimeout(() => {
+      if (isMountedRef.current) dropBlocks();
+    }, 300);
   }, [gameState, dropBlocks]);
 
   const activatePowerUp = useCallback((type: PowerUpType) => {
@@ -355,7 +363,9 @@ export function useGameState() {
     });
     
     if (mergeDropTimeoutRef.current) clearTimeout(mergeDropTimeoutRef.current);
-    mergeDropTimeoutRef.current = setTimeout(() => dropBlocks(), 300);
+    mergeDropTimeoutRef.current = setTimeout(() => {
+      if (isMountedRef.current) dropBlocks();
+    }, 300);
   }, [gameState.grid, gameState.mergeAllTargetValue, gameState.powerUps, gameState.difficulty, dropBlocks]);
 
   const handleSelectReward = useCallback((type: PowerUpType) => {
@@ -417,19 +427,33 @@ export function useGameState() {
       const stored = localStorage.getItem("numberMatch_gameState");
       if (stored) {
         const savedState = JSON.parse(stored);
+
+        // Validate difficulty and grid dimensions
+        const difficulty = savedState.difficulty || "normal";
+        const config = DIFFICULTY_CONFIGS[difficulty];
+
         if (savedState.grid) {
+          // Check if grid dimensions match the current difficulty
+          if (savedState.grid.length !== config.gridRows ||
+              savedState.grid[0]?.length !== config.gridCols) {
+            console.warn("Grid dimensions don't match difficulty, starting fresh");
+            return;
+          }
+
           savedState.grid = savedState.grid.map((row: (Block | null)[]) =>
             row.map((block: Block | null) =>
               block ? { ...block, isNew: false, isMerging: false, isSelected: false } : null
             )
           );
         }
+
         if (!savedState.difficulty) {
           savedState.difficulty = "normal";
         }
         if (typeof savedState.progressLevel !== "number") {
           savedState.progressLevel = 0;
         }
+
         setGameState({
           ...savedState,
           selectedBlocks: [],
