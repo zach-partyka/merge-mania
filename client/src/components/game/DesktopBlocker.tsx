@@ -20,7 +20,7 @@ export function DesktopBlocker() {
         </p>
         
         <p className="font-game text-base text-white/50">
-          Please visit on your phone or tablet to play Number Match.
+          Please visit on your phone or tablet to play Merge Mania.
         </p>
         
         <div className="mt-12 flex items-center gap-3">

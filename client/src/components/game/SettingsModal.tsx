@@ -74,7 +74,7 @@ export function SettingsModal({
         
         {/* Version */}
         <div className="mt-6 text-center text-white/40 text-sm font-game">
-          Number Match v1.0
+          Merge Mania v1.0
         </div>
       </div>
     </div>
