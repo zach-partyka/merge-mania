@@ -40,6 +40,12 @@ Preferred communication style: Simple, everyday language.
 3. **Shared types**: TypeScript types and game constants shared between client and server via `@shared` alias
 4. **Component architecture**: Game UI split into modular components (GameGrid, NumberBlock, PowerUpTray, modals)
 
+### Animation & Sound System
+- **GSAP**: Professional animation library for smooth, three-phase animations (anticipation → action → settle)
+- **Web Audio API**: Synthesized sound effects for merge pops, power-up activation, and celebrations
+- **tsParticles**: Canvas-based particle system for celebration effects on milestones
+- **Animation files**: `client/src/lib/animations.ts` (reusable GSAP utilities), `client/src/lib/sounds.ts` (audio synthesis)
+
 ## External Dependencies
 
 ### UI Components
@@ -63,3 +69,7 @@ Preferred communication style: Simple, everyday language.
 - Tailwind CSS with custom configuration
 - Class Variance Authority for component variants
 - Google Fonts (Nunito, Fredoka)
+
+### Animation Libraries
+- GSAP for professional-quality animations with elastic/back easing
+- tsParticles with @tsparticles/react for canvas particle effects
