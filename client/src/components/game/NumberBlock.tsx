@@ -1,4 +1,4 @@
-import { Crown, Sparkles } from "lucide-react";
+import { Crown } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { formatNumber, getBlockColor, type Block } from "@shared/schema";
 
@@ -12,36 +12,6 @@ interface NumberBlockProps {
   isMergeTarget?: boolean;
   onTouchStart?: (block: Block) => void;
   onTouchEnter?: (block: Block) => void;
-}
-
-function SparkleParticles({ size }: { size: number }) {
-  const particles = [
-    { x: -0.3, y: -0.4, delay: 0, scale: 0.6 },
-    { x: 0.4, y: -0.3, delay: 0.05, scale: 0.5 },
-    { x: 0.3, y: 0.4, delay: 0.1, scale: 0.7 },
-    { x: -0.4, y: 0.3, delay: 0.08, scale: 0.5 },
-    { x: 0, y: -0.5, delay: 0.03, scale: 0.6 },
-    { x: 0.5, y: 0, delay: 0.12, scale: 0.4 },
-  ];
-
-  return (
-    <>
-      {particles.map((p, i) => (
-        <div
-          key={i}
-          className="absolute pointer-events-none animate-sparkle"
-          style={{
-            left: `calc(50% + ${p.x * size}px)`,
-            top: `calc(50% + ${p.y * size}px)`,
-            animationDelay: `${p.delay}s`,
-            transform: `scale(${p.scale})`,
-          }}
-        >
-          <Sparkles className="w-3 h-3 text-yellow-300 drop-shadow-lg" />
-        </div>
-      ))}
-    </>
-  );
 }
 
 export function NumberBlock({ 
@@ -152,9 +122,6 @@ export function NumberBlock({
           className="absolute inset-0 rounded-xl pointer-events-none ring-4 ring-blue-400 animate-pulse"
         />
       )}
-
-      {/* Sparkle particles on new blocks */}
-      {block.isNew && <SparkleParticles size={size} />}
     </div>
   );
 }
