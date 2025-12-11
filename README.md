@@ -2,8 +2,6 @@
 
 A mobile-first puzzle game where you connect matching numbers to create bigger values. Built with React, TypeScript, and lots of satisfying animations.
 
-![Game Preview](./attached_assets/IMG_3349_1765335388480.png)
-
 ## 🎯 Features
 
 - **Progressive Difficulty**: Three modes (Kids, Normal, Hard) with different grid sizes
