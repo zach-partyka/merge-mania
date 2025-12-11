@@ -1,6 +1,7 @@
-import { useState, useCallback } from "react";
+import { useState, useCallback, useRef, useEffect } from "react";
 import { useLocation } from "wouter";
 import { Settings, X } from "lucide-react";
+import gsap from "gsap";
 import { Button } from "@/components/ui/button";
 import { GameGrid } from "@/components/game/GameGrid";
 import { ScoreDisplay } from "@/components/game/ScoreDisplay";
@@ -12,23 +13,27 @@ import { GameOverModal } from "@/components/game/GameOverModal";
 import { RewardModal } from "@/components/game/RewardModal";
 import { MergeAllPicker } from "@/components/game/MergeAllPicker";
 import { DesktopBlocker } from "@/components/game/DesktopBlocker";
+import { CelebrationParticles } from "@/components/game/CelebrationParticles";
 import { useGameState } from "@/hooks/useGameState";
 import { useIsMobile } from "@/hooks/useIsMobile";
 import { cn } from "@/lib/utils";
 import { type PowerUpType } from "@shared/schema";
+import { playMergePop, playPowerUpActivate, playCelebration } from "@/lib/sounds";
 
 export default function Game() {
   const isMobile = useIsMobile();
   const [, setLocation] = useLocation();
   const [showSettings, setShowSettings] = useState(false);
-  const [isShaking, setIsShaking] = useState(false);
+  const [showCelebration, setShowCelebration] = useState(false);
+  const gameContainerRef = useRef<HTMLDivElement>(null);
+  const prevProgressLevel = useRef(0);
   
   const {
     gameState,
     showRewardModal,
     handleTouchStart,
     handleTouchMove,
-    handleTouchEnd,
+    handleTouchEnd: originalHandleTouchEnd,
     activatePowerUp,
     cancelPowerUp,
     selectMergeAllTarget,
@@ -42,13 +47,35 @@ export default function Game() {
     resetAllProgress
   } = useGameState();
 
+  const handleTouchEnd = useCallback(() => {
+    if (gameState.selectedBlocks.length >= 2 && !gameState.activePowerUp) {
+      playMergePop(gameState.selectedBlocks.length);
+    }
+    originalHandleTouchEnd();
+  }, [gameState.selectedBlocks.length, gameState.activePowerUp, originalHandleTouchEnd]);
+
+  useEffect(() => {
+    if (gameState.progressLevel > prevProgressLevel.current) {
+      playCelebration();
+      setShowCelebration(true);
+    }
+    prevProgressLevel.current = gameState.progressLevel;
+  }, [gameState.progressLevel]);
+
   const triggerScreenShake = useCallback(() => {
-    setIsShaking(true);
-    setTimeout(() => setIsShaking(false), 400);
+    if (gameContainerRef.current) {
+      gsap.timeline()
+        .to(gameContainerRef.current, { x: -6, duration: 0.04 })
+        .to(gameContainerRef.current, { x: 6, duration: 0.04 })
+        .to(gameContainerRef.current, { x: -4, duration: 0.04 })
+        .to(gameContainerRef.current, { x: 4, duration: 0.04 })
+        .to(gameContainerRef.current, { x: 0, duration: 0.04 });
+    }
   }, []);
 
   const handlePowerUpSelect = useCallback((type: PowerUpType) => {
     activatePowerUp(type);
+    playPowerUpActivate();
     triggerScreenShake();
   }, [activatePowerUp, triggerScreenShake]);
 
@@ -59,16 +86,19 @@ export default function Game() {
 
   return (
     <div 
-      className={cn(
-        "min-h-screen bg-game-bg flex flex-col items-center select-none overflow-hidden",
-        isShaking && "animate-screen-shake"
-      )}
+      ref={gameContainerRef}
+      className="min-h-screen bg-game-bg flex flex-col items-center select-none overflow-hidden"
       style={{ 
         paddingTop: "env(safe-area-inset-top)",
         paddingBottom: "env(safe-area-inset-bottom)"
       }}
       data-testid="game-screen"
     >
+      <CelebrationParticles 
+        trigger={showCelebration} 
+        intensity="high"
+        onComplete={() => setShowCelebration(false)}
+      />
       {/* Header */}
       <header className="w-full flex items-center justify-between gap-2 px-4 py-3">
         <div className="w-10" />

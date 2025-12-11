@@ -1,4 +1,6 @@
+import { useRef, useEffect } from "react";
 import { Crown } from "lucide-react";
+import gsap from "gsap";
 import { cn } from "@/lib/utils";
 import { formatNumber, getBlockColor, type Block } from "@shared/schema";
 
@@ -25,8 +27,69 @@ export function NumberBlock({
   onTouchStart,
   onTouchEnter 
 }: NumberBlockProps) {
+  const blockRef = useRef<HTMLDivElement>(null);
   const label = formatNumber(block.value);
   const color = getBlockColor(block.value);
+
+  useEffect(() => {
+    if (block.isNew && blockRef.current) {
+      const el = blockRef.current;
+      gsap.set(el, { scale: 0, opacity: 0 });
+      
+      gsap.timeline()
+        .to(el, {
+          scale: 1.15,
+          opacity: 1,
+          duration: 0.15,
+          ease: "back.out(2)"
+        })
+        .to(el, {
+          scale: 1,
+          duration: 0.25,
+          ease: "elastic.out(1, 0.4)"
+        });
+    }
+  }, [block.isNew, block.id]);
+
+  useEffect(() => {
+    if (block.isMerging && blockRef.current) {
+      gsap.to(blockRef.current, {
+        scale: 0.7,
+        opacity: 0.5,
+        duration: 0.1,
+        ease: "power2.in"
+      });
+    }
+  }, [block.isMerging]);
+
+  useEffect(() => {
+    const el = blockRef.current;
+    if (!el) return;
+    
+    gsap.killTweensOf(el, "rotation");
+    
+    if (isInPath && chainLength >= 3) {
+      const intensity = Math.min(chainLength - 2, 4);
+      const angle = 2 * intensity;
+      
+      gsap.to(el, {
+        rotation: angle,
+        duration: 0.08,
+        yoyo: true,
+        repeat: -1,
+        ease: "power1.inOut"
+      });
+    } else {
+      gsap.set(el, { rotation: 0 });
+    }
+    
+    return () => {
+      if (el) {
+        gsap.killTweensOf(el, "rotation");
+        gsap.set(el, { rotation: 0 });
+      }
+    };
+  }, [isInPath, chainLength]);
   
   // Determine font size based on label length
   const getFontSize = () => {
@@ -36,23 +99,12 @@ export function NumberBlock({
     return "text-base";
   };
   
-  // Get progressive shake class based on chain length
-  const getChainShakeClass = () => {
-    if (!isInPath || chainLength < 3) return "";
-    if (chainLength >= 6) return "animate-chain-shake-intense";
-    if (chainLength >= 4) return "animate-chain-shake-medium";
-    return "animate-chain-shake-subtle";
-  };
-
   return (
     <div
+      ref={blockRef}
       className={cn(
-        "relative flex items-center justify-center rounded-xl font-game-display font-bold text-white select-none transition-all duration-75",
-        getFontSize(),
-        block.isNew && "animate-squash-stretch",
-        block.isNew && "animate-glow-fade",
-        block.isMerging && "animate-block-merge",
-        getChainShakeClass()
+        "relative flex items-center justify-center rounded-xl font-game-display font-bold text-white select-none",
+        getFontSize()
       )}
       style={{
         width: size,
