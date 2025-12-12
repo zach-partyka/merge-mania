@@ -1,4 +1,5 @@
-import { Trophy, RotateCcw } from "lucide-react";
+import { FaTrophy } from "react-icons/fa";
+import { IoRefresh } from "react-icons/io5";
 import { Button } from "@/components/ui/button";
 import { formatNumber } from "@shared/schema";
 
@@ -44,20 +45,20 @@ export function GameOverModal({
             <div className="text-center flex-1">
               <div className="text-white/60 font-game text-sm mb-1">Highest</div>
               <div className="flex items-center justify-center gap-1 text-yellow-400 font-game-display text-2xl font-bold">
-                <Trophy className="w-5 h-5" />
+                <FaTrophy className="w-5 h-5" />
                 {formatNumber(highestNumber)}
               </div>
             </div>
           </div>
         </div>
-        
+
         {/* Play again button */}
         <Button
           onClick={onPlayAgain}
           className="w-full h-14 text-lg font-game-display bg-gradient-to-b from-green-500 to-green-600 hover:from-green-400 hover:to-green-500 text-white rounded-xl"
           data-testid="button-play-again"
         >
-          <RotateCcw className="w-6 h-6 mr-2" />
+          <IoRefresh className="w-6 h-6 mr-2" />
           Play Again
         </Button>
       </div>

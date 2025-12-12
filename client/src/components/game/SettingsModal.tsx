@@ -1,4 +1,4 @@
-import { X, Volume2 } from "lucide-react";
+import { IoClose, IoVolumeHigh } from "react-icons/io5";
 import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
 import { type GameSettings } from "@shared/schema";
@@ -38,16 +38,16 @@ export function SettingsModal({
             className="text-white/60 hover:text-white hover:bg-white/10"
             data-testid="button-close-settings"
           >
-            <X className="w-6 h-6" />
+            <IoClose className="w-6 h-6" />
           </Button>
         </div>
-        
+
         {/* Settings list */}
         <div className="space-y-4">
           {/* Sound */}
           <div className="flex items-center justify-between py-3 border-b border-white/10">
             <div className="flex items-center gap-3 text-white">
-              <Volume2 className="w-5 h-5 text-white/60" />
+              <IoVolumeHigh className="w-5 h-5 text-white/60" />
               <span className="font-game">Sound Effects</span>
             </div>
             <Switch

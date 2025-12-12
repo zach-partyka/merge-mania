@@ -1,27 +1,28 @@
 import { useRef, useEffect } from "react";
-import { Gift, Eraser, ArrowLeftRight, Magnet, Bookmark } from "lucide-react";
+import { FaGift, FaEraser, FaMagnet, FaBookmark } from "react-icons/fa";
+import { FaExchangeAlt } from "react-icons/fa";
 import gsap from "gsap";
 import { Button } from "@/components/ui/button";
 import { type PowerUpType } from "@shared/schema";
 
-const powerUpOptions: { type: PowerUpType; icon: typeof Eraser; label: string; description: string; color: string }[] = [
+const powerUpOptions: { type: PowerUpType; icon: typeof FaEraser; label: string; description: string; color: string }[] = [
   {
     type: "remove",
-    icon: Eraser,
+    icon: FaEraser,
     label: "Remove",
     description: "Remove any block from the board",
     color: "from-red-500 to-red-600"
   },
   {
     type: "swap",
-    icon: ArrowLeftRight,
+    icon: FaExchangeAlt,
     label: "Swap",
     description: "Swap positions of two blocks",
     color: "from-purple-500 to-purple-600"
   },
   {
     type: "mergeAll",
-    icon: Magnet,
+    icon: FaMagnet,
     label: "Merge All",
     description: "Merge all matching number blocks",
     color: "from-blue-500 to-blue-600"
@@ -66,7 +67,7 @@ export function RewardModal({ isOpen, onSelectPowerUp, onSaveForLater }: RewardM
       <div ref={modalRef} className="bg-game-grid rounded-2xl p-6 w-full max-w-xs flex flex-col items-center relative z-10">
         {/* Header with gift icon */}
         <div ref={giftRef} className="w-16 h-16 rounded-full bg-gradient-to-b from-yellow-400 to-orange-500 flex items-center justify-center mb-4">
-          <Gift className="w-8 h-8 text-white" />
+          <FaGift className="w-8 h-8 text-white" />
         </div>
         
         <h2 className="font-game-display text-2xl font-bold text-white mb-2">
@@ -104,7 +105,7 @@ export function RewardModal({ isOpen, onSelectPowerUp, onSaveForLater }: RewardM
           className="w-full h-12 font-game text-white/60 hover:text-white hover:bg-white/10 rounded-xl"
           data-testid="button-save-for-later"
         >
-          <Bookmark className="w-5 h-5 mr-2" />
+          <FaBookmark className="w-5 h-5 mr-2" />
           Save for Later
         </Button>
       </div>

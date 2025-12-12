@@ -1,4 +1,5 @@
-import { Trophy, Sparkles } from "lucide-react";
+import { FaTrophy } from "react-icons/fa";
+import { FaStarOfLife } from "react-icons/fa6";
 import { formatNumber, type DifficultyLevel } from "@shared/schema";
 
 interface ScoreDisplayProps {
@@ -23,7 +24,7 @@ export function ScoreDisplay({
           boxShadow: "0 4px 16px rgba(251, 191, 36, 0.2)"
         }}
       >
-        <Trophy className="w-5 h-5 text-amber-400 drop-shadow-lg animate-pulse" />
+        <FaTrophy className="w-5 h-5 text-amber-400 drop-shadow-lg animate-pulse" />
         <span className="font-game text-base font-bold text-white drop-shadow-md" data-testid="highest-number">
           {formatNumber(highestNumber)}
         </span>
@@ -31,7 +32,7 @@ export function ScoreDisplay({
 
       {/* Level display with dramatic gradient and glow */}
       <div className="relative flex items-center gap-3">
-        <Sparkles className="w-6 h-6 text-game-accent animate-pulse drop-shadow-lg" />
+        <FaStarOfLife className="w-5 h-5 text-game-accent animate-pulse drop-shadow-lg" />
         <span
           className={`font-game-display text-5xl font-black text-transparent bg-clip-text ${isKidsMode ? "animate-bounce-subtle" : ""} hover:scale-105 transition-transform duration-300`}
           style={{
@@ -42,7 +43,7 @@ export function ScoreDisplay({
         >
           Level {progressLevel + 1}
         </span>
-        <Sparkles className="w-6 h-6 text-game-accent animate-pulse drop-shadow-lg" style={{ animationDelay: "0.5s" }} />
+        <FaStarOfLife className="w-5 h-5 text-game-accent animate-pulse drop-shadow-lg" style={{ animationDelay: "0.5s" }} />
       </div>
     </div>
   );

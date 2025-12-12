@@ -1,6 +1,6 @@
 import { useState, useCallback, useRef, useEffect } from "react";
 import { useLocation } from "wouter";
-import { Settings, X } from "lucide-react";
+import { IoSettingsSharp, IoClose } from "react-icons/io5";
 import gsap from "gsap";
 import { Button } from "@/components/ui/button";
 import { GameGrid } from "@/components/game/GameGrid";
@@ -85,68 +85,94 @@ export default function Game() {
   }
 
   return (
-    <div 
+    <div
       ref={gameContainerRef}
-      className="min-h-screen bg-game-bg flex flex-col items-center select-none overflow-hidden"
-      style={{ 
+      className="min-h-screen bg-game-bg flex flex-col items-center select-none overflow-hidden relative"
+      style={{
         paddingTop: "env(safe-area-inset-top)",
         paddingBottom: "env(safe-area-inset-bottom)"
       }}
       data-testid="game-screen"
     >
-      <CelebrationParticles 
-        trigger={showCelebration} 
+      {/* Subtle animated backgrounds - gameplay focused */}
+      <div className="absolute inset-0 overflow-hidden pointer-events-none">
+        <div
+          className="absolute inset-0"
+          style={{
+            background: "radial-gradient(circle at 20% 30%, #7c3aed 0%, transparent 50%)",
+            opacity: 0.08,
+            animation: "float 10s ease-in-out infinite"
+          }}
+        />
+        <div
+          className="absolute inset-0"
+          style={{
+            background: "radial-gradient(circle at 80% 70%, #fb7185 0%, transparent 50%)",
+            opacity: 0.10,
+            animation: "float 12s ease-in-out infinite reverse"
+          }}
+        />
+      </div>
+
+      <CelebrationParticles
+        trigger={showCelebration}
         intensity="high"
         onComplete={() => setShowCelebration(false)}
       />
       {/* Header */}
-      <header className="w-full flex items-center justify-between gap-2 px-4 py-3">
+      <header className="w-full flex items-center justify-between gap-2 px-4 py-4 relative z-10">
         <div className="w-10" />
-        
+
         <ScoreDisplay
           highestNumber={gameState.highestNumber}
           progressLevel={gameState.progressLevel}
           difficulty={gameState.difficulty}
         />
-        
-        <Button
-          size="icon"
-          variant="ghost"
+
+        <button
           onClick={togglePause}
-          className="text-white/60 hover:text-white hover:bg-white/10"
+          className="w-10 h-10 rounded-xl bg-white/10 backdrop-blur-sm border border-white/20 text-white flex items-center justify-center hover:bg-white/20 hover:scale-110 transition-all duration-300 shadow-lg"
+          style={{
+            boxShadow: "0 4px 12px rgba(0, 0, 0, 0.3)"
+          }}
           data-testid="button-pause"
         >
-          <Settings className="w-6 h-6" />
-        </Button>
+          <IoSettingsSharp className="w-6 h-6" />
+        </button>
       </header>
 
       {/* Progress bar */}
-      <ProgressBar 
-        progressPoints={gameState.progressPoints}
-        difficulty={gameState.difficulty}
-        progressLevel={gameState.progressLevel}
-      />
+      <div className="relative z-10 w-full">
+        <ProgressBar
+          progressPoints={gameState.progressPoints}
+          difficulty={gameState.difficulty}
+          progressLevel={gameState.progressLevel}
+        />
+      </div>
 
       {/* Active power-up indicator */}
       {gameState.activePowerUp && gameState.activePowerUp !== "mergeAll" && (
-        <div className="flex items-center gap-2 mt-3 px-4 py-2 bg-white/10 rounded-full">
-          <span className="font-game text-white text-sm">
+        <div
+          className="flex items-center gap-3 mt-3 px-6 py-3 bg-gradient-to-r from-white/15 to-white/10 backdrop-blur-md rounded-2xl border border-white/20 shadow-xl relative z-10 animate-bounce-in"
+          style={{
+            boxShadow: "0 8px 24px rgba(124, 58, 237, 0.3)"
+          }}
+        >
+          <span className="font-game text-white text-base font-semibold">
             {gameState.activePowerUp === "remove" && "Tap a block to remove it"}
             {gameState.activePowerUp === "swap" && (
-              gameState.swapFirstBlock 
-                ? "Tap another block to swap with" 
+              gameState.swapFirstBlock
+                ? "Tap another block to swap with"
                 : "Tap the first block to swap"
             )}
           </span>
-          <Button
-            size="icon"
-            variant="ghost"
+          <button
             onClick={cancelPowerUp}
-            className="w-6 h-6 text-white/60 hover:text-white"
+            className="w-7 h-7 rounded-full bg-white/20 backdrop-blur-sm border border-white/30 text-white hover:bg-white/30 hover:scale-110 transition-all duration-300 flex items-center justify-center"
             data-testid="button-cancel-powerup"
           >
-            <X className="w-4 h-4" />
-          </Button>
+            <IoClose className="w-5 h-5" strokeWidth={3} />
+          </button>
         </div>
       )}
 
@@ -227,6 +253,20 @@ export default function Game() {
           onCancel={cancelPowerUp}
         />
       )}
+
+      <style jsx>{`
+        @keyframes float {
+          0%, 100% {
+            transform: scale(1) translate(0, 0);
+          }
+          33% {
+            transform: scale(1.05) translate(15px, -15px);
+          }
+          66% {
+            transform: scale(0.95) translate(-10px, 10px);
+          }
+        }
+      `}</style>
     </div>
   );
 }

@@ -1,4 +1,5 @@
-import { Eraser, ArrowLeftRight, Magnet } from "lucide-react";
+import { FaEraser, FaMagnet } from "react-icons/fa";
+import { FaExchangeAlt } from "react-icons/fa";
 import { cn } from "@/lib/utils";
 import { type PowerUpType, type PowerUps } from "@shared/schema";
 
@@ -14,19 +15,19 @@ interface PowerUpTrayProps {
 
 const powerUpConfig = {
   remove: {
-    icon: Eraser,
+    icon: FaEraser,
     label: "Remove",
     color: "from-red-500 to-red-600",
     activeColor: "ring-red-400"
   },
   swap: {
-    icon: ArrowLeftRight,
+    icon: FaExchangeAlt,
     label: "Swap",
     color: "from-purple-500 to-purple-600",
     activeColor: "ring-purple-400"
   },
   mergeAll: {
-    icon: Magnet,
+    icon: FaMagnet,
     label: "Merge",
     color: "from-blue-500 to-blue-600",
     activeColor: "ring-blue-400"
@@ -71,9 +72,9 @@ export function PowerUpTray({
               !isDisabled && "active:scale-95"
             )}
             style={{
-              boxShadow: isDisabled 
-                ? "none" 
-                : "0 4px 0 0 rgba(0,0,0,0.3), 0 6px 10px rgba(0,0,0,0.2)"
+              boxShadow: isDisabled
+                ? "none"
+                : "0 4px 0 0 rgba(0,0,0,0.3), 0 8px 16px rgba(0,0,0,0.3)"
             }}
             data-testid={`powerup-${type}`}
           >
