@@ -34,31 +34,40 @@ export default function NewGame() {
       }}
       data-testid="new-game-screen"
     >
-      {/* Animated background gradient */}
-      <div
-        className="absolute inset-0 opacity-20"
-        style={{
-          background: "radial-gradient(circle at 50% 50%, #16a34a 0%, transparent 70%)",
-          animation: "pulse 4s ease-in-out infinite"
-        }}
-      />
+      {/* Dramatic animated background with multiple gradients */}
+      <div className="absolute inset-0 overflow-hidden">
+        <div
+          className="absolute inset-0 opacity-20"
+          style={{
+            background: "radial-gradient(circle at 30% 40%, #7c3aed 0%, transparent 50%)",
+            animation: "float 8s ease-in-out infinite"
+          }}
+        />
+        <div
+          className="absolute inset-0 opacity-15"
+          style={{
+            background: "radial-gradient(circle at 70% 60%, #fb7185 0%, transparent 50%)",
+            animation: "float 10s ease-in-out infinite reverse"
+          }}
+        />
+      </div>
 
       <div className="relative z-10 w-full max-w-sm">
-        {/* Title with gradient */}
-        <div className="text-center mb-10">
+        {/* Title with dramatic gradient */}
+        <div className="text-center mb-12">
           <h1
-            className="font-game-display text-4xl font-black text-transparent bg-clip-text mb-3"
+            className="font-game-display text-5xl font-black text-transparent bg-clip-text mb-4 animate-bounce-in"
             style={{
-              backgroundImage: "linear-gradient(135deg, #ffffff 0%, #16a34a 100%)",
-              textShadow: "0 4px 20px rgba(22, 163, 74, 0.3)"
+              backgroundImage: "linear-gradient(135deg, #a78bfa 0%, #fb7185 50%, #fbbf24 100%)",
+              filter: "drop-shadow(0 4px 16px rgba(124, 58, 237, 0.6)) drop-shadow(0 0 40px rgba(251, 113, 133, 0.3))"
             }}
           >
             Choose Mode
           </h1>
           <div className="flex items-center justify-center gap-2">
-            <Sparkles className="w-3 h-3 text-game-accent animate-pulse" />
-            <p className="text-white/60 text-sm font-game">Select your challenge</p>
-            <Sparkles className="w-3 h-3 text-game-accent animate-pulse" style={{ animationDelay: "0.5s" }} />
+            <Sparkles className="w-5 h-5 text-game-accent animate-pulse drop-shadow-lg" />
+            <p className="text-white/80 text-base font-game font-semibold tracking-wide">Select your challenge</p>
+            <Sparkles className="w-5 h-5 text-game-accent animate-pulse drop-shadow-lg" style={{ animationDelay: "0.5s" }} />
           </div>
         </div>
 
@@ -67,29 +76,23 @@ export default function NewGame() {
           {/* Kids Mode */}
           <Button
             onClick={() => handleDifficultySelect("kids")}
-            className="w-full h-24 bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white rounded-2xl flex flex-col items-center justify-center shadow-lg transition-all duration-300 hover:scale-105 hover:shadow-xl border-2 border-white/20 relative overflow-hidden group"
+            className="w-full h-28 text-white rounded-3xl flex flex-col items-center justify-center shadow-2xl transition-all duration-300 hover:scale-105 border-2 border-white/30 relative overflow-hidden group"
+            style={{
+              background: "linear-gradient(135deg, #14b8a6 0%, #06b6d4 50%, #0891b2 100%)",
+              boxShadow: "0 8px 32px rgba(20, 184, 166, 0.5), 0 0 60px rgba(20, 184, 166, 0.3)"
+            }}
             data-testid="button-difficulty-kids"
           >
-            {/* Shine effect */}
-            <div className="absolute inset-0 opacity-0 group-hover:opacity-30 transition-opacity">
-              <div
-                style={{
-                  background: "linear-gradient(45deg, transparent 30%, rgba(255,255,255,0.3) 50%, transparent 70%)",
-                  backgroundSize: "200% 200%",
-                  animation: "shine 2s ease-in-out infinite",
-                  position: "absolute",
-                  inset: 0
-                }}
-              />
-            </div>
+            {/* Animated shimmer effect */}
+            <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000" />
             <div className="relative z-10 flex items-center gap-3 mb-1">
-              <Baby className="w-7 h-7" />
-              <span className="font-game-display font-bold text-2xl">
+              <Baby className="w-8 h-8 drop-shadow-lg" />
+              <span className="font-game-display font-black text-3xl drop-shadow-lg">
                 {DIFFICULTY_CONFIGS.kids.label}
               </span>
-              <Play className="w-6 h-6" fill="currentColor" />
+              <Play className="w-7 h-7 drop-shadow-lg" fill="currentColor" />
             </div>
-            <span className="font-game text-sm opacity-90 relative z-10">
+            <span className="font-game text-sm font-semibold opacity-95 relative z-10 backdrop-blur-sm bg-white/20 px-4 py-1 rounded-full">
               {DIFFICULTY_CONFIGS.kids.gridCols}×{DIFFICULTY_CONFIGS.kids.gridRows} grid • Earn power-ups faster
             </span>
           </Button>
@@ -97,25 +100,19 @@ export default function NewGame() {
           {/* Normal Mode */}
           <Button
             onClick={() => handleDifficultySelect("normal")}
-            className="w-full h-16 bg-gradient-to-br from-white/15 to-white/5 backdrop-blur-sm hover:from-white/20 hover:to-white/10 text-white rounded-2xl flex items-center justify-center gap-3 border-2 border-white/20 shadow-lg transition-all duration-300 hover:scale-105 relative overflow-hidden group"
+            className="w-full h-20 text-white rounded-3xl flex items-center justify-center gap-4 shadow-2xl transition-all duration-300 hover:scale-105 border-2 border-white/30 relative overflow-hidden group"
+            style={{
+              background: "linear-gradient(135deg, #7c3aed 0%, #a855f7 50%, #fb7185 100%)",
+              boxShadow: "0 8px 32px rgba(124, 58, 237, 0.5), 0 0 60px rgba(124, 58, 237, 0.3)"
+            }}
             data-testid="button-difficulty-normal"
           >
-            <div className="absolute inset-0 opacity-0 group-hover:opacity-30 transition-opacity">
-              <div
-                style={{
-                  background: "linear-gradient(45deg, transparent 30%, rgba(255,255,255,0.2) 50%, transparent 70%)",
-                  backgroundSize: "200% 200%",
-                  animation: "shine 2s ease-in-out infinite",
-                  position: "absolute",
-                  inset: 0
-                }}
-              />
-            </div>
-            <Target className="w-6 h-6 relative z-10" />
-            <span className="font-game-display font-bold text-xl relative z-10">
+            <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000" />
+            <Target className="w-8 h-8 drop-shadow-lg relative z-10" />
+            <span className="font-game-display font-black text-2xl drop-shadow-lg relative z-10">
               {DIFFICULTY_CONFIGS.normal.label}
             </span>
-            <span className="font-game text-sm text-white/70 relative z-10">
+            <span className="font-game text-base text-white/90 font-semibold backdrop-blur-sm bg-white/20 px-3 py-1 rounded-full relative z-10">
               {DIFFICULTY_CONFIGS.normal.gridCols}×{DIFFICULTY_CONFIGS.normal.gridRows}
             </span>
           </Button>
@@ -123,25 +120,19 @@ export default function NewGame() {
           {/* Hard Mode */}
           <Button
             onClick={() => handleDifficultySelect("hard")}
-            className="w-full h-16 bg-gradient-to-br from-white/15 to-white/5 backdrop-blur-sm hover:from-white/20 hover:to-white/10 text-white rounded-2xl flex items-center justify-center gap-3 border-2 border-white/20 shadow-lg transition-all duration-300 hover:scale-105 relative overflow-hidden group"
+            className="w-full h-20 text-white rounded-3xl flex items-center justify-center gap-4 shadow-2xl transition-all duration-300 hover:scale-105 border-2 border-white/30 relative overflow-hidden group"
+            style={{
+              background: "linear-gradient(135deg, #fb7185 0%, #f472b6 50%, #fbbf24 100%)",
+              boxShadow: "0 8px 32px rgba(251, 113, 133, 0.5), 0 0 60px rgba(251, 113, 133, 0.3)"
+            }}
             data-testid="button-difficulty-hard"
           >
-            <div className="absolute inset-0 opacity-0 group-hover:opacity-30 transition-opacity">
-              <div
-                style={{
-                  background: "linear-gradient(45deg, transparent 30%, rgba(255,255,255,0.2) 50%, transparent 70%)",
-                  backgroundSize: "200% 200%",
-                  animation: "shine 2s ease-in-out infinite",
-                  position: "absolute",
-                  inset: 0
-                }}
-              />
-            </div>
-            <Zap className="w-6 h-6 relative z-10" />
-            <span className="font-game-display font-bold text-xl relative z-10">
+            <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000" />
+            <Zap className="w-8 h-8 drop-shadow-lg relative z-10" fill="currentColor" />
+            <span className="font-game-display font-black text-2xl drop-shadow-lg relative z-10">
               {DIFFICULTY_CONFIGS.hard.label}
             </span>
-            <span className="font-game text-sm text-white/70 relative z-10">
+            <span className="font-game text-base text-white/90 font-semibold backdrop-blur-sm bg-white/20 px-3 py-1 rounded-full relative z-10">
               {DIFFICULTY_CONFIGS.hard.gridCols}×{DIFFICULTY_CONFIGS.hard.gridRows}
             </span>
           </Button>
@@ -150,7 +141,7 @@ export default function NewGame() {
         {/* Back button */}
         <button
           onClick={handleBack}
-          className="w-full mt-8 font-game text-white/70 hover:text-white text-base transition-colors py-2"
+          className="w-full mt-10 font-game text-white/80 hover:text-white text-lg font-semibold transition-all duration-300 py-3 hover:scale-105 backdrop-blur-sm bg-white/5 hover:bg-white/10 rounded-xl border border-white/10 hover:border-white/20"
           data-testid="button-back"
         >
           ← Back
@@ -158,13 +149,19 @@ export default function NewGame() {
       </div>
 
       <style jsx>{`
-        @keyframes shine {
-          0%, 100% { background-position: 200% 200%; }
-          50% { background-position: -200% -200%; }
-        }
-        @keyframes pulse {
-          0%, 100% { opacity: 0.2; transform: scale(1); }
-          50% { opacity: 0.3; transform: scale(1.05); }
+        @keyframes float {
+          0%, 100% {
+            opacity: 0.15;
+            transform: scale(1) translate(0, 0);
+          }
+          33% {
+            opacity: 0.25;
+            transform: scale(1.1) translate(20px, -20px);
+          }
+          66% {
+            opacity: 0.2;
+            transform: scale(0.95) translate(-15px, 15px);
+          }
         }
       `}</style>
     </div>

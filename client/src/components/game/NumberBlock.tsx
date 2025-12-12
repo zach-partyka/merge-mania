@@ -99,20 +99,28 @@ export function NumberBlock({
     return "text-base";
   };
   
+  // Get enhanced glow color based on value tier
+  const getGlowEffect = () => {
+    if (block.value >= 8192) return `0 0 20px rgba(20, 184, 166, 0.6), 0 0 40px rgba(20, 184, 166, 0.3)`;
+    if (block.value >= 512) return `0 0 16px rgba(251, 113, 133, 0.5), 0 0 32px rgba(251, 113, 133, 0.25)`;
+    if (block.value >= 32) return `0 0 12px rgba(124, 58, 237, 0.4), 0 0 24px rgba(124, 58, 237, 0.2)`;
+    return '';
+  };
+
   return (
     <div
       ref={blockRef}
       className={cn(
-        "relative flex items-center justify-center rounded-xl font-game-display font-bold text-white select-none",
+        "relative flex items-center justify-center rounded-xl font-game-display font-bold text-white select-none transition-all duration-200",
         getFontSize()
       )}
       style={{
         width: size,
         height: size,
         backgroundColor: color,
-        boxShadow: isInPath 
-          ? `0 2px 0 0 ${adjustColor(color, -40)}, 0 3px 6px rgba(0,0,0,0.4)`
-          : `0 4px 0 0 ${adjustColor(color, -30)}, 0 6px 10px rgba(0,0,0,0.3)`,
+        boxShadow: isInPath
+          ? `0 2px 0 0 ${adjustColor(color, -40)}, 0 3px 8px rgba(0,0,0,0.5), inset 0 -2px 4px rgba(0,0,0,0.3)`
+          : `0 4px 0 0 ${adjustColor(color, -30)}, 0 6px 16px rgba(0,0,0,0.4), ${getGlowEffect()}`,
         transform: isInPath ? "scale(0.92) translateY(2px)" : "scale(1)",
         zIndex: isInPath ? 10 : 1
       }}
@@ -135,43 +143,70 @@ export function NumberBlock({
         }
       }}
     >
-      <span className="relative z-10 drop-shadow-md">{label}</span>
-      
-      {/* Highlight effect for higher numbers */}
-      {block.value >= 1024 && (
-        <div 
-          className="absolute inset-0 rounded-xl opacity-30"
+      <span className="relative z-10 drop-shadow-lg font-black tracking-tight">{label}</span>
+
+      {/* Enhanced shimmer effect for higher numbers */}
+      {block.value >= 512 && (
+        <div
+          className="absolute inset-0 rounded-xl opacity-40"
           style={{
-            background: "linear-gradient(135deg, rgba(255,255,255,0.4) 0%, transparent 50%)"
+            background: "linear-gradient(135deg, rgba(255,255,255,0.5) 0%, transparent 40%, rgba(255,255,255,0.2) 100%)"
+          }}
+        />
+      )}
+
+      {/* Premium glow overlay for very high numbers */}
+      {block.value >= 8192 && (
+        <div
+          className="absolute inset-0 rounded-xl opacity-30 animate-pulse"
+          style={{
+            background: "radial-gradient(circle at 50% 30%, rgba(255,255,255,0.6) 0%, transparent 60%)"
           }}
         />
       )}
       
-      {/* Crown icon for highest value block on board */}
+      {/* Crown icon for highest value block on board - enhanced */}
       {isHighest && (
-        <div className="absolute -top-1 -right-1 bg-yellow-400 rounded-full p-0.5 shadow-md">
-          <Crown className="w-3 h-3 text-yellow-900" />
+        <div
+          className="absolute -top-2 -right-2 bg-gradient-to-br from-yellow-300 to-amber-500 rounded-full p-1 shadow-lg animate-bounce-subtle"
+          style={{
+            boxShadow: "0 0 16px rgba(251, 191, 36, 0.8), 0 0 32px rgba(251, 191, 36, 0.4)"
+          }}
+        >
+          <Crown className="w-4 h-4 text-amber-900 drop-shadow-md" />
         </div>
       )}
 
-      {/* Dark overlay when selected (pressed effect) */}
+      {/* Dark overlay when selected (pressed effect) with glow */}
       {isInPath && (
-        <div 
-          className="absolute inset-0 rounded-xl pointer-events-none bg-black/20"
-        />
+        <>
+          <div className="absolute inset-0 rounded-xl pointer-events-none bg-black/30" />
+          <div
+            className="absolute inset-0 rounded-xl pointer-events-none"
+            style={{
+              boxShadow: "inset 0 0 20px rgba(255, 255, 255, 0.2)"
+            }}
+          />
+        </>
       )}
-      
-      {/* Swap first block highlight */}
+
+      {/* Swap first block highlight - enhanced */}
       {isSwapFirst && (
-        <div 
+        <div
           className="absolute inset-0 rounded-xl pointer-events-none ring-4 ring-purple-400 animate-pulse"
+          style={{
+            boxShadow: "0 0 20px rgba(168, 85, 247, 0.6), 0 0 40px rgba(168, 85, 247, 0.3)"
+          }}
         />
       )}
-      
-      {/* Merge all target highlight */}
+
+      {/* Merge all target highlight - enhanced */}
       {isMergeTarget && (
-        <div 
-          className="absolute inset-0 rounded-xl pointer-events-none ring-4 ring-blue-400 animate-pulse"
+        <div
+          className="absolute inset-0 rounded-xl pointer-events-none ring-4 ring-cyan-400 animate-pulse"
+          style={{
+            boxShadow: "0 0 20px rgba(34, 211, 238, 0.6), 0 0 40px rgba(34, 211, 238, 0.3)"
+          }}
         />
       )}
     </div>
